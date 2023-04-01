@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Stack } from "@mui/material";
+import Navbar from "./components/Navbar";
+import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import supabase from "./supabase";
+import useAuthStore from "./store/auth";
 
-function App() {
+const App = () => {
+  const [init, setInit] = useState(false);
+  const { setUser } = useAuthStore();
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.auth.getSession();
+
+      if (data.session)
+        setUser({
+          id: data.session.user!.id,
+          email: data.session.user!.email!,
+        });
+
+      setInit(true);
+    })();
+  }, [setUser]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Stack sx={{ height: "100vh" }}>
+      <Navbar />
+
+      <Stack
+        sx={{
+          flexGrow: 1,
+          p: 2,
+        }}
+      >
+        {init ? <Outlet /> : <>loading</>}
+      </Stack>
+    </Stack>
   );
-}
+};
 
 export default App;
