@@ -1,8 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
-  "https://daemnhbpcgqtjyeiwmsg.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhZW1uaGJwY2dxdGp5ZWl3bXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzgyNzQ5MDEsImV4cCI6MTk5Mzg1MDkwMX0.WRV0hB6axa0Tdoo5injuhWSlxlUxjFXuDaD0ALN3pQ4"
+  "https://icdaesacokskotjodojf.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljZGFlc2Fjb2tza290am9kb2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjY0Mjg2MDMsImV4cCI6MTk4MjAwNDYwM30.tpvafDkBKS7ZBNH43NergCIBBeHExbolMOkzjo2kxDE"
 );
+
+export interface InsertBudgetData {
+  title: string;
+  is_pinned: boolean;
+}
 
 export default supabase;
