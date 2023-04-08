@@ -1,4 +1,10 @@
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   DeleteOutlineOutlined,
   PushPin,
@@ -6,7 +12,8 @@ import {
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
-import { Budgets } from "../supabase";
+import supabase, { Budgets } from "../supabase";
+import { SyntheticEvent, useState } from "react";
 
 const BudgetCard = ({
   created_at,
@@ -17,6 +24,21 @@ const BudgetCard = ({
   total_income,
   total_expenses,
 }: Budgets["Row"]) => {
+  const [loader, setLoader] = useState(false);
+
+  const onTogglePin = async (event: SyntheticEvent) => {
+    event.preventDefault();
+
+    setLoader(true);
+
+    await supabase
+      .from("budgets")
+      .update({ is_pinned: !is_pinned })
+      .eq("id", id);
+
+    setLoader(false);
+  };
+
   return (
     <Stack
       sx={{
@@ -38,11 +60,15 @@ const BudgetCard = ({
             {title}
           </Typography>
 
-          <Tooltip title={is_pinned ? "Unpin" : "Pin"}>
-            <IconButton size="small" color="secondary">
-              {is_pinned ? <PushPin /> : <PushPinOutlined />}
-            </IconButton>
-          </Tooltip>
+          {loader ? (
+            <CircularProgress size="20px" />
+          ) : (
+            <Tooltip title={is_pinned ? "Unpin" : "Pin"}>
+              <IconButton size="small" color="secondary" onClick={onTogglePin}>
+                {is_pinned ? <PushPin /> : <PushPinOutlined />}
+              </IconButton>
+            </Tooltip>
+          )}
         </Stack>
 
         <Stack direction="row" gap={1} alignItems="center">

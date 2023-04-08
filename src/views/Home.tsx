@@ -43,9 +43,7 @@ const Home = () => {
           table: "budgets",
         },
         (payload: RealtimePostgresChangesPayload<Budgets["Row"]>) => {
-          if (payload.eventType === "INSERT") {
-            fetchBudgets();
-          }
+          fetchBudgets();
         }
       )
       .subscribe();
