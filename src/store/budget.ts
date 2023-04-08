@@ -1,12 +1,10 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { Database } from "../db_types";
+import { Budgets } from "../supabase";
 
 export interface BudgetState {
-  budgets: Database["public"]["Tables"]["budgets"]["Row"][];
-  setBudgets: (
-    budgets: Database["public"]["Tables"]["budgets"]["Row"][]
-  ) => void;
+  budgets: Budgets["Row"][];
+  setBudgets: (budgets: Budgets["Row"][]) => void;
 }
 
 const useBudgetStore = create<BudgetState>()(

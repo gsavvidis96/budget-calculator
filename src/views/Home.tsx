@@ -1,29 +1,35 @@
-import { Button, Stack, TextField } from "@mui/material";
+import { Button, CircularProgress, Stack, TextField } from "@mui/material";
 import { AddOutlined, ImportExport } from "@mui/icons-material";
 import userBaseStore, { DialogComponents } from "../store/base";
-import supabase from "../supabase";
-import { useEffectOnce } from "react-use";
+import supabase, { Budgets } from "../supabase";
+import { useMount } from "react-use";
 import useBudgetStore from "../store/budget";
-import { Database } from "../db_types";
 import BudgetCard from "../components/BudgetCard";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 const Home = () => {
   const { setDialog } = userBaseStore();
   const { budgets, setBudgets } = useBudgetStore();
+  const [loader, setLoader] = useState(false);
+
+  const fetchBudgets = useCallback(async () => {
+    setLoader(true);
+
+    const { data } = await supabase
+      .from<"budgets", Budgets>("budgets")
+      .select("*")
+      .order("is_pinned", { ascending: false })
+      .order("created_at", { ascending: false });
+
+    if (data) setBudgets(data);
+
+    setLoader(false);
+  }, [setBudgets]);
 
   // fetch budgets
-  useEffectOnce(() => {
-    (async () => {
-      const { data } = await supabase
-        .from<"budgets", Database["public"]["Tables"]["budgets"]>("budgets")
-        .select("*")
-        .order("is_pinned", { ascending: false })
-        .order("created_at", { ascending: false });
-
-      if (data) setBudgets(data);
-    })();
+  useMount(() => {
+    fetchBudgets();
   });
 
   // subscribe to budgets
@@ -37,15 +43,9 @@ const Home = () => {
           schema: "public",
           table: "budgets",
         },
-        (
-          payload: RealtimePostgresChangesPayload<
-            Database["public"]["Tables"]["budgets"]["Row"]
-          >
-        ) => {
+        (payload: RealtimePostgresChangesPayload<Budgets["Row"]>) => {
           if (payload.eventType === "INSERT") {
-            console.log([...budgets, { ...payload.new }]);
-
-            setBudgets([...budgets, { ...payload.new }]);
+            fetchBudgets();
           }
         }
       )
@@ -56,7 +56,7 @@ const Home = () => {
         await supabase.removeChannel(channel);
       })();
     };
-  }, [budgets, setBudgets]);
+  }, [fetchBudgets]);
 
   return (
     <Stack
@@ -103,11 +103,15 @@ const Home = () => {
         </Button>
       </Stack>
 
-      <Stack gap={2} sx={{ flexGrow: 1, overflow: "auto" }}>
-        {budgets.map((budget) => {
-          return <BudgetCard {...budget} key={budget.id} />;
-        })}
-      </Stack>
+      {loader ? (
+        <CircularProgress sx={{ m: "auto" }} size="75px" thickness={2} />
+      ) : (
+        <Stack gap={2} sx={{ flexGrow: 1, overflow: "auto" }}>
+          {budgets.map((budget) => {
+            return <BudgetCard {...budget} key={budget.id} />;
+          })}
+        </Stack>
+      )}
     </Stack>
   );
 };

@@ -1,5 +1,4 @@
 import {
-  Button,
   Checkbox,
   FormControlLabel,
   FormGroup,
@@ -8,21 +7,28 @@ import {
   Typography,
 } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
-import { Database } from "../db_types";
-import supabase from "../supabase";
+import supabase, { Budgets } from "../supabase";
+import useBaseStore from "../store/base";
+import { LoadingButton } from "@mui/lab";
 
 const NewBudget = () => {
-  const [title, setTitle] = useState<string>("");
-  const [isPinned, setIsPinned] = useState<boolean>(false);
+  const [title, setTitle] = useState("");
+  const [isPinned, setIsPinned] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const { setDialog } = useBaseStore();
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
 
-    const { data, error } = await supabase
-      .from<"budgets", Database["public"]["Tables"]["budgets"]>("budgets")
+    setLoader(true);
+
+    await supabase
+      .from<"budgets", Budgets>("budgets")
       .insert({ title, is_pinned: isPinned });
 
-    console.log(data);
+    setDialog({ open: false, component: null, props: null });
+
+    setLoader(false);
   };
 
   return (
@@ -59,9 +65,15 @@ const NewBudget = () => {
         />
       </FormGroup>
 
-      <Button variant="contained" type="submit" size="small" disabled={!title}>
+      <LoadingButton
+        variant="contained"
+        type="submit"
+        size="small"
+        disabled={!title}
+        loading={loader}
+      >
         Add
-      </Button>
+      </LoadingButton>
     </Stack>
   );
 };

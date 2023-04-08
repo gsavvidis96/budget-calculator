@@ -83,7 +83,9 @@ const App = () => {
           open={dialog.open}
         >
           <Stack sx={{ width: "600px", padding: 2 }}>
-            {dialog.component === DialogComponents.NEW_BUDGET && <NewBudget />}
+            {dialog.component === DialogComponents.NEW_BUDGET && (
+              <NewBudget {...dialog.props} />
+            )}
           </Stack>
         </Dialog>
       </Stack>

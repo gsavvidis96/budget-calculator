@@ -5,15 +5,10 @@ import {
   PushPinOutlined,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import { Database } from "../db_types";
 import dayjs from "dayjs";
+import { Budgets } from "../supabase";
 
-const BudgetCard = ({
-  created_at,
-  id,
-  is_pinned,
-  title,
-}: Database["public"]["Tables"]["budgets"]["Row"]) => {
+const BudgetCard = ({ created_at, id, is_pinned, title }: Budgets["Row"]) => {
   return (
     <Stack
       sx={{
