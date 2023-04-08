@@ -1,7 +1,7 @@
 import { Button, CircularProgress, Stack, TextField } from "@mui/material";
 import { AddOutlined, ImportExport } from "@mui/icons-material";
 import userBaseStore, { DialogComponents } from "../store/base";
-import supabase, { Budgets } from "../supabase";
+import supabase, { Budgets, Functions } from "../supabase";
 import { useMount } from "react-use";
 import useBudgetStore from "../store/budget";
 import BudgetCard from "../components/BudgetCard";
@@ -16,11 +16,10 @@ const Home = () => {
   const fetchBudgets = useCallback(async () => {
     setLoader(true);
 
-    const { data } = await supabase
-      .from<"budgets", Budgets>("budgets")
-      .select("*")
-      .order("is_pinned", { ascending: false })
-      .order("created_at", { ascending: false });
+    const { data } = await supabase.rpc<
+      "get_budgets_with_balance",
+      Functions["get_budgets_with_balance"]
+    >("get_budgets_with_balance");
 
     if (data) setBudgets(data);
 

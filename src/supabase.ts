@@ -16,6 +16,9 @@ export interface Budgets {
     is_pinned: boolean;
     title: string | null;
     user_id: string;
+    total_income: number;
+    total_expenses: number;
+    balance: number;
   };
   Insert: {
     created_at?: string | null;
@@ -30,6 +33,22 @@ export interface Budgets {
     is_pinned?: boolean;
     title?: string | null;
     user_id?: string;
+  };
+}
+
+export interface Functions {
+  get_budgets_with_balance: {
+    Args: Record<PropertyKey, never>;
+    Returns: {
+      id: string;
+      created_at: string;
+      title: string;
+      is_pinned: boolean;
+      user_id: string;
+      total_income: number;
+      total_expenses: number;
+      balance: number;
+    }[];
   };
 }
 

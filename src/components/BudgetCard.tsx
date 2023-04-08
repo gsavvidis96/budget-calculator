@@ -8,7 +8,15 @@ import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import { Budgets } from "../supabase";
 
-const BudgetCard = ({ created_at, id, is_pinned, title }: Budgets["Row"]) => {
+const BudgetCard = ({
+  created_at,
+  id,
+  is_pinned,
+  title,
+  balance,
+  total_income,
+  total_expenses,
+}: Budgets["Row"]) => {
   return (
     <Stack
       sx={{
@@ -43,8 +51,38 @@ const BudgetCard = ({ created_at, id, is_pinned, title }: Budgets["Row"]) => {
           </Typography>
 
           <Typography variant="body1" color="text.secondary">
-            TBD€
+            {balance} €
           </Typography>
+
+          <Typography variant="body2" color="text.secondary">
+            |
+          </Typography>
+        </Stack>
+
+        <Stack direction="row" gap={1} alignItems="center">
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="subtitle2" color="text.primary">
+              Income:
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              {total_income} €
+            </Typography>
+          </Stack>
+
+          <Typography variant="body2" color="text.secondary">
+            |
+          </Typography>
+
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="subtitle2" color="text.primary">
+              Expenses:
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              {total_expenses} €
+            </Typography>
+          </Stack>
         </Stack>
 
         <Stack direction="row" gap={1} alignItems="center">

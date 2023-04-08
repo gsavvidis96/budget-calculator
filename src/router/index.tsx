@@ -27,7 +27,7 @@ export default createBrowserRouter([
       },
       {
         path: "*",
-        element: <Navigate to="/surveys" />,
+        element: <Navigate to="/" />,
       },
     ],
   },
