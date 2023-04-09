@@ -1,1 +1,8 @@
 supabase error handling
+
+===================================
+
+search
+filters
+infinite scrolling
+dialog shadow

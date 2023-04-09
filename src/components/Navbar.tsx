@@ -1,31 +1,10 @@
-import {
-  AppBar,
-  Button,
-  IconButton,
-  Stack,
-  Toolbar,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import useAuthStore from "../store/auth";
-import supabase from "../supabase";
-import { useNavigate } from "react-router-dom";
+import { AppBar, IconButton, Stack, Toolbar, Typography } from "@mui/material";
 import useBaseStore from "../store/base";
-import { Brightness7, Brightness4 } from "@mui/icons-material";
+import { Menu } from "@mui/icons-material";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
-  const { user, setUser } = useAuthStore();
-  const { prefersDarkMode, togglePrefersDarkMode } = useBaseStore();
-  const theme = useTheme();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-
-    setUser(null);
-
-    navigate("/login");
-  };
+  const { menu, setMenu } = useBaseStore();
 
   return (
     <AppBar
@@ -52,21 +31,14 @@ const Navbar = () => {
               fontWeight: "600",
               fontSize: "18px",
             }}
+            component={NavLink}
+            to="/"
           >
             Budget Calculator
           </Typography>
 
-          {user && (
-            <Button color="inherit" onClick={handleLogout}>
-              Logout
-            </Button>
-          )}
-
-          <IconButton
-            color="primary"
-            onClick={() => togglePrefersDarkMode(!prefersDarkMode, true)}
-          >
-            {theme.palette.mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          <IconButton color="primary" onClick={() => setMenu(!menu)}>
+            <Menu></Menu>
           </IconButton>
         </Stack>
       </Toolbar>

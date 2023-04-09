@@ -22,8 +22,6 @@ const BudgetCard = ({
   is_pinned,
   title,
   balance,
-  total_income,
-  total_expenses,
 }: Budgets["Row"]) => {
   const [loader, setLoader] = useState(false);
   const { setDialog } = useBaseStore();
@@ -70,7 +68,7 @@ const BudgetCard = ({
       to={`/${id}`}
     >
       <Stack gap={1} sx={{ flexGrow: 1 }}>
-        <Stack direction="row" gap={2} alignItems="center">
+        <Stack direction="row" gap={1} alignItems="center">
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
             {title}
           </Typography>
@@ -87,49 +85,23 @@ const BudgetCard = ({
         </Stack>
 
         <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="subtitle1" color="text.primary">
+          <Typography variant="subtitle2" color="text.primary">
             Created at:
           </Typography>
 
-          <Typography variant="body1" color="text.secondary">
-            {dayjs(created_at).format("DD/MM/YYYY HH:mm")}
+          <Typography variant="body2" color="text.secondary">
+            {dayjs(created_at).format("DD/MM/YYYY")}
           </Typography>
         </Stack>
 
         <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="subtitle1" color="text.primary">
+          <Typography variant="subtitle2" color="text.primary">
             Balance:
           </Typography>
 
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body2" color="text.secondary">
             {balance} €
           </Typography>
-        </Stack>
-
-        <Stack direction="row" gap={1} alignItems="center">
-          <Stack direction="row" gap={1} alignItems="center">
-            <Typography variant="subtitle2" color="text.primary">
-              Income:
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary">
-              {total_income} €
-            </Typography>
-          </Stack>
-
-          <Typography variant="body2" color="text.secondary">
-            |
-          </Typography>
-
-          <Stack direction="row" gap={1} alignItems="center">
-            <Typography variant="subtitle2" color="text.primary">
-              Expenses:
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary">
-              {total_expenses} €
-            </Typography>
-          </Stack>
         </Stack>
       </Stack>
 

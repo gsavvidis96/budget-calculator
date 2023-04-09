@@ -4,6 +4,7 @@ import AuthGuard from "./AuthGuard";
 import App from "../App";
 import Login from "../views/Login";
 import Home from "../views/Home";
+import About from "../views/About";
 
 export default createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export default createBrowserRouter([
             <Login />
           </AuthGuard>
         ),
+      },
+      {
+        path: "/about",
+        element: <About />,
       },
       {
         path: "*",

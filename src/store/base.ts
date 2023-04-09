@@ -4,6 +4,7 @@ import { immer } from "zustand/middleware/immer";
 export enum DialogComponents {
   NEW_BUDGET,
   DELETE_BUDGET,
+  LOGOUT,
 }
 
 export interface Dialog {
@@ -17,18 +18,30 @@ export interface Base {
 }
 
 export interface BaseState {
+  menu: boolean;
   prefersDarkMode: boolean;
+  dialog: Dialog;
+  setMenu: (menu: boolean) => void;
   togglePrefersDarkMode: (
     prefersDarkMode: boolean,
     saveToLocalStorage?: boolean
   ) => void;
-  dialog: Dialog;
   setDialog: (dialog: Dialog) => void;
 }
 
 const useBaseStore = create<BaseState>()(
   immer((set) => ({
+    menu: false,
     prefersDarkMode: false,
+    dialog: {
+      open: false,
+      component: null,
+      props: undefined,
+    },
+    setMenu: (menu) =>
+      set((state) => {
+        state.menu = menu;
+      }),
     togglePrefersDarkMode: (prefersDarkMode, saveToLocalStorage?) =>
       set((state) => {
         state.prefersDarkMode = prefersDarkMode;
@@ -40,11 +53,6 @@ const useBaseStore = create<BaseState>()(
           );
         }
       }),
-    dialog: {
-      open: false,
-      component: null,
-      props: undefined,
-    },
     setDialog: (dialog) =>
       set((state) => {
         state.dialog = {
