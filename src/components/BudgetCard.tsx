@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import supabase, { Budgets } from "../supabase";
 import { SyntheticEvent, useState } from "react";
+import useBaseStore, { DialogComponents } from "../store/base";
 
 const BudgetCard = ({
   created_at,
@@ -25,6 +26,7 @@ const BudgetCard = ({
   total_expenses,
 }: Budgets["Row"]) => {
   const [loader, setLoader] = useState(false);
+  const { setDialog } = useBaseStore();
 
   const onTogglePin = async (event: SyntheticEvent) => {
     event.preventDefault();
@@ -37,6 +39,19 @@ const BudgetCard = ({
       .eq("id", id);
 
     setLoader(false);
+  };
+
+  const onOpenDeleteDialog = (event: SyntheticEvent) => {
+    event.preventDefault();
+
+    setDialog({
+      open: true,
+      component: DialogComponents.DELETE_BUDGET,
+      props: {
+        id,
+        title,
+      },
+    });
   };
 
   return (
@@ -73,15 +88,21 @@ const BudgetCard = ({
 
         <Stack direction="row" gap={1} alignItems="center">
           <Typography variant="subtitle1" color="text.primary">
+            Created at:
+          </Typography>
+
+          <Typography variant="body1" color="text.secondary">
+            {dayjs(created_at).format("DD/MM/YYYY HH:mm")}
+          </Typography>
+        </Stack>
+
+        <Stack direction="row" gap={1} alignItems="center">
+          <Typography variant="subtitle1" color="text.primary">
             Balance:
           </Typography>
 
           <Typography variant="body1" color="text.secondary">
             {balance} €
-          </Typography>
-
-          <Typography variant="body2" color="text.secondary">
-            |
           </Typography>
         </Stack>
 
@@ -110,21 +131,12 @@ const BudgetCard = ({
             </Typography>
           </Stack>
         </Stack>
-
-        <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="subtitle1" color="text.primary">
-            Created at:
-          </Typography>
-
-          <Typography variant="body1" color="text.secondary">
-            {dayjs(created_at).format("DD/MM/YYYY HH:mm")}
-          </Typography>
-        </Stack>
       </Stack>
 
       <IconButton
         size="small"
         sx={{ alignSelf: "start", color: "error.light" }}
+        onClick={onOpenDeleteDialog}
       >
         <DeleteOutlineOutlined />
       </IconButton>

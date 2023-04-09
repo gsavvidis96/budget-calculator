@@ -3,6 +3,7 @@ import { immer } from "zustand/middleware/immer";
 
 export enum DialogComponents {
   NEW_BUDGET,
+  DELETE_BUDGET,
 }
 
 export interface Dialog {
@@ -10,7 +11,6 @@ export interface Dialog {
   component: DialogComponents | null;
   props?: any;
 }
-
 export interface Base {
   prefersDarkMode: boolean;
   dialog: Dialog;
@@ -43,11 +43,14 @@ const useBaseStore = create<BaseState>()(
     dialog: {
       open: false,
       component: null,
-      props: null,
+      props: undefined,
     },
     setDialog: (dialog) =>
       set((state) => {
-        state.dialog = dialog;
+        state.dialog = {
+          ...dialog,
+          props: dialog.props || undefined,
+        };
       }),
   }))
 );

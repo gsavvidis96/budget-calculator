@@ -15,6 +15,7 @@ import createCustomTheme from "./theme";
 import { useMemo } from "react";
 import { useMount } from "react-use";
 import NewBudget from "./views/NewBudget";
+import DeleteBudget from "./views/DeleteBudget";
 
 const App = () => {
   const [init, setInit] = useState(false);
@@ -77,14 +78,14 @@ const App = () => {
         </Container>
 
         <Dialog
-          onClose={() =>
-            setDialog({ open: false, component: null, props: null })
-          }
+          onClose={() => setDialog({ open: false, component: null })}
           open={dialog.open}
         >
           <Stack sx={{ width: "600px", padding: 2 }}>
-            {dialog.component === DialogComponents.NEW_BUDGET && (
-              <NewBudget {...dialog.props} />
+            {dialog.component === DialogComponents.NEW_BUDGET && <NewBudget />}
+
+            {dialog.component === DialogComponents.DELETE_BUDGET && (
+              <DeleteBudget {...dialog.props} />
             )}
           </Stack>
         </Dialog>

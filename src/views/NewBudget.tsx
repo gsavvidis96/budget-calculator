@@ -26,7 +26,7 @@ const NewBudget = () => {
       .from<"budgets", Budgets>("budgets")
       .insert({ title, is_pinned: isPinned });
 
-    setDialog({ open: false, component: null, props: null });
+    setDialog({ open: false, component: null });
 
     setLoader(false);
   };
