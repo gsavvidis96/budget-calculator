@@ -5,4 +5,4 @@ supabase error handling
 search
 filters
 infinite scrolling
-dialog shadow
+snackbar on add and delete budget

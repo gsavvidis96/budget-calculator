@@ -98,6 +98,11 @@ const App = () => {
           open={dialog.open}
           fullWidth={mdAndDown}
           maxWidth={false}
+          sx={{
+            ".MuiDialog-container .MuiPaper-root": {
+              boxShadow: "none",
+            },
+          }}
         >
           <Stack sx={{ width: mdAndDown ? "100%" : "600px", padding: 2 }}>
             {dialog.component === DialogComponents.LOGOUT && <Logout />}
