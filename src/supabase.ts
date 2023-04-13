@@ -40,6 +40,7 @@ export interface Functions {
   get_budgets_with_balance: {
     Args: {
       sort_by?: string;
+      search_query?: string;
     };
     Returns: {
       id: string;

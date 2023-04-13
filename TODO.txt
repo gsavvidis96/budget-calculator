@@ -2,7 +2,6 @@ supabase error handling
 
 ===================================
 
-search
-filters
 infinite scrolling
 snackbar on add and delete budget
+budgetsFetched, loaders when fetching budgets

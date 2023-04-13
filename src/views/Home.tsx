@@ -2,14 +2,15 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  InputAdornment,
   Stack,
   TextField,
   useMediaQuery,
 } from "@mui/material";
-import { Add, AddOutlined } from "@mui/icons-material";
+import { Add, AddOutlined, Close } from "@mui/icons-material";
 import userBaseStore, { DialogComponents } from "../store/base";
 import supabase, { Functions } from "../supabase";
-import { useMount, useUpdateEffect } from "react-use";
+import { useDebounce, useMount, useUpdateEffect } from "react-use";
 import useBudgetStore, { filterMap } from "../store/budget";
 import BudgetCard from "../components/BudgetCard";
 import { useCallback, useEffect, useState } from "react";
@@ -20,6 +21,7 @@ const Home = () => {
   const { setDialog } = userBaseStore();
   const { budgets, setBudgets, filter } = useBudgetStore();
   const [loader, setLoader] = useState(false);
+  const [search, setSearch] = useState("");
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
@@ -30,15 +32,27 @@ const Home = () => {
     const { data } = await supabase.rpc<
       "get_budgets_with_balance",
       Functions["get_budgets_with_balance"]
-    >("get_budgets_with_balance", { sort_by: filterMap[filter] });
+    >("get_budgets_with_balance", {
+      sort_by: filterMap[filter],
+      search_query: search,
+    });
 
     if (data) setBudgets(data);
 
     setLoader(false);
-  }, [setBudgets, filter]);
+  }, [setBudgets, filter, search]);
 
-  // fetch budgets
+  const [, cancel] = useDebounce(
+    () => {
+      fetchBudgets();
+    },
+    500,
+    [search]
+  );
+
   useMount(() => {
+    cancel();
+
     fetchBudgets();
   });
 
@@ -68,7 +82,7 @@ const Home = () => {
 
   useUpdateEffect(() => {
     fetchBudgets();
-  }, [fetchBudgets]);
+  }, [filter]);
 
   return (
     <Stack
@@ -95,6 +109,19 @@ const Home = () => {
           }}
           color="secondary"
           size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {search && (
+                  <IconButton onClick={() => setSearch("")} size="small">
+                    <Close />
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
         />
 
         <Filters />
