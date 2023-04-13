@@ -6,19 +6,19 @@ import {
   TextField,
   useMediaQuery,
 } from "@mui/material";
-import { Add, AddOutlined, ImportExport } from "@mui/icons-material";
+import { Add, AddOutlined } from "@mui/icons-material";
 import userBaseStore, { DialogComponents } from "../store/base";
-import supabase, { Budgets, Functions } from "../supabase";
-import { useMount } from "react-use";
-import useBudgetStore from "../store/budget";
+import supabase, { Functions } from "../supabase";
+import { useMount, useUpdateEffect } from "react-use";
+import useBudgetStore, { filterMap } from "../store/budget";
 import BudgetCard from "../components/BudgetCard";
 import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import Filters from "../components/Filters";
 
 const Home = () => {
   const { setDialog } = userBaseStore();
-  const { budgets, setBudgets } = useBudgetStore();
+  const { budgets, setBudgets, filter } = useBudgetStore();
   const [loader, setLoader] = useState(false);
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
@@ -30,12 +30,12 @@ const Home = () => {
     const { data } = await supabase.rpc<
       "get_budgets_with_balance",
       Functions["get_budgets_with_balance"]
-    >("get_budgets_with_balance");
+    >("get_budgets_with_balance", { sort_by: filterMap[filter] });
 
     if (data) setBudgets(data);
 
     setLoader(false);
-  }, [setBudgets]);
+  }, [setBudgets, filter]);
 
   // fetch budgets
   useMount(() => {
@@ -53,7 +53,7 @@ const Home = () => {
           schema: "public",
           table: "budgets",
         },
-        (payload: RealtimePostgresChangesPayload<Budgets["Row"]>) => {
+        () => {
           fetchBudgets();
         }
       )
@@ -64,6 +64,10 @@ const Home = () => {
         await supabase.removeChannel(channel);
       })();
     };
+  }, [fetchBudgets]);
+
+  useUpdateEffect(() => {
+    fetchBudgets();
   }, [fetchBudgets]);
 
   return (
@@ -93,61 +97,42 @@ const Home = () => {
           size="small"
         />
 
+        <Filters />
+
         {smAndDown ? (
-          <>
-            <IconButton
-              sx={{ alignSelf: "center" }}
-              color="inherit"
-              size="small"
-            >
-              <ImportExport />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                alignSelf: "center",
-                backgroundColor: "primary.main",
-                width: "24px",
-                height: "24px",
-              }}
-              size="small"
-              color="primary"
-              onClick={() =>
-                setDialog({
-                  open: true,
-                  component: DialogComponents.NEW_BUDGET,
-                })
-              }
-            >
-              <Add sx={{ color: "white" }} />
-            </IconButton>
-          </>
+          <IconButton
+            sx={{
+              alignSelf: "center",
+              backgroundColor: "primary.main",
+              width: "24px",
+              height: "24px",
+            }}
+            size="small"
+            color="primary"
+            onClick={() =>
+              setDialog({
+                open: true,
+                component: DialogComponents.NEW_BUDGET,
+              })
+            }
+          >
+            <Add sx={{ color: "white" }} />
+          </IconButton>
         ) : (
-          <>
-            <Button
-              sx={{ alignSelf: "center" }}
-              endIcon={<ImportExport />}
-              variant="text"
-              color="inherit"
-            >
-              Sort By
-            </Button>
-
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ ml: "auto", alignSelf: "center" }}
-              startIcon={<AddOutlined />}
-              onClick={() =>
-                setDialog({
-                  open: true,
-                  component: DialogComponents.NEW_BUDGET,
-                })
-              }
-            >
-              New
-            </Button>
-          </>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ ml: "auto", alignSelf: "center" }}
+            startIcon={<AddOutlined />}
+            onClick={() =>
+              setDialog({
+                open: true,
+                component: DialogComponents.NEW_BUDGET,
+              })
+            }
+          >
+            New
+          </Button>
         )}
       </Stack>
 

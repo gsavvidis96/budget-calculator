@@ -38,7 +38,9 @@ export interface Budgets {
 
 export interface Functions {
   get_budgets_with_balance: {
-    Args: Record<PropertyKey, never>;
+    Args: {
+      sort_by?: string;
+    };
     Returns: {
       id: string;
       created_at: string;
