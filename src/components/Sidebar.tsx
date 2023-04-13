@@ -13,7 +13,7 @@ import useAuthStore from "../store/auth";
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
-  const { prefersDarkMode, togglePrefersDarkMode, setDialog, setMenu } =
+  const { prefersDarkMode, togglePrefersDarkMode, setDialog, setDrawer } =
     useBaseStore();
   const { user } = useAuthStore();
   const theme = useTheme();
@@ -24,7 +24,7 @@ const Sidebar = () => {
       component: DialogComponents.LOGOUT,
     });
 
-    setMenu(false);
+    setDrawer(false);
   };
 
   return (
@@ -34,7 +34,7 @@ const Sidebar = () => {
           <ListItemButton
             component={NavLink}
             to="/about"
-            onClick={() => setMenu(false)}
+            onClick={() => setDrawer(false)}
             sx={{
               "&.active": {
                 color: theme.palette.primary.main,

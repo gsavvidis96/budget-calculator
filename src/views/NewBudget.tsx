@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import supabase, { Budgets } from "../supabase";
 import useBaseStore from "../store/base";
 import { LoadingButton } from "@mui/lab";
@@ -15,20 +15,27 @@ const NewBudget = () => {
   const [title, setTitle] = useState("");
   const [isPinned, setIsPinned] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [error, setError] = useState(false);
   const { setDialog } = useBaseStore();
+
+  useEffect(() => {
+    setError(false);
+  }, [title]);
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
 
     setLoader(true);
 
-    await supabase
+    const { error } = await supabase
       .from<"budgets", Budgets>("budgets")
       .insert({ title, is_pinned: isPinned });
 
-    setDialog({ open: false, component: null });
-
     setLoader(false);
+
+    if (error) return setError(true);
+
+    setDialog({ open: false, component: null });
   };
 
   return (
@@ -50,6 +57,8 @@ const NewBudget = () => {
         size="small"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        error={error}
+        helperText={error ? "A budget with this name already exists" : ""}
       />
 
       <FormGroup sx={{ alignSelf: "start" }}>

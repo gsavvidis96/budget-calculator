@@ -1,7 +1,4 @@
 supabase error handling
+migrations and envs
 
 ===================================
-
-infinite scrolling
-snackbar on add and delete budget
-budgetsFetched, loaders when fetching budgets

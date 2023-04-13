@@ -5,6 +5,7 @@ import {
   InputAdornment,
   Stack,
   TextField,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { Add, AddOutlined, Close } from "@mui/icons-material";
@@ -16,31 +17,38 @@ import BudgetCard from "../components/BudgetCard";
 import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import Filters from "../components/Filters";
+import useBaseStore from "../store/base";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { Budgets } from "../supabase";
 
 const Home = () => {
   const { setDialog } = userBaseStore();
   const { budgets, setBudgets, filter } = useBudgetStore();
+  const { setSnackbar } = useBaseStore();
   const [loader, setLoader] = useState(false);
   const [search, setSearch] = useState("");
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
 
-  const fetchBudgets = useCallback(async () => {
-    setLoader(true);
+  const fetchBudgets = useCallback(
+    async (withLoader = true) => {
+      if (withLoader) setLoader(true);
 
-    const { data } = await supabase.rpc<
-      "get_budgets_with_balance",
-      Functions["get_budgets_with_balance"]
-    >("get_budgets_with_balance", {
-      sort_by: filterMap[filter],
-      search_query: search,
-    });
+      const { data } = await supabase.rpc<
+        "get_budgets_with_balance",
+        Functions["get_budgets_with_balance"]
+      >("get_budgets_with_balance", {
+        sort_by: filterMap[filter],
+        search_query: search,
+      });
 
-    if (data) setBudgets(data);
+      if (data) setBudgets(data);
 
-    setLoader(false);
-  }, [setBudgets, filter, search]);
+      if (withLoader) setLoader(false);
+    },
+    [setBudgets, filter, search]
+  );
 
   const [, cancel] = useDebounce(
     () => {
@@ -67,8 +75,29 @@ const Home = () => {
           schema: "public",
           table: "budgets",
         },
-        () => {
-          fetchBudgets();
+        (payload: RealtimePostgresChangesPayload<Budgets>) => {
+          fetchBudgets(false);
+
+          if (payload.eventType === "INSERT")
+            setSnackbar({
+              open: true,
+              type: "success",
+              message: "Budget was added!",
+            });
+
+          if (payload.eventType === "DELETE")
+            setSnackbar({
+              open: true,
+              type: "warning",
+              message: "Budget was deleted.",
+            });
+
+          if (payload.eventType === "UPDATE")
+            setSnackbar({
+              open: true,
+              type: "success",
+              message: "Budget was updated.",
+            });
         }
       )
       .subscribe();
@@ -78,7 +107,7 @@ const Home = () => {
         await supabase.removeChannel(channel);
       })();
     };
-  }, [fetchBudgets]);
+  }, [fetchBudgets, setSnackbar]);
 
   useUpdateEffect(() => {
     fetchBudgets();
@@ -170,6 +199,12 @@ const Home = () => {
           {budgets.map((budget) => {
             return <BudgetCard {...budget} key={budget.id} />;
           })}
+
+          {budgets.length === 0 && (
+            <Typography variant="h4" sx={{ mt: 4 }}>
+              No Budgets found.
+            </Typography>
+          )}
         </Stack>
       )}
     </Stack>

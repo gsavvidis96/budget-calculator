@@ -4,7 +4,7 @@ import { Menu } from "@mui/icons-material";
 import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
-  const { menu, setMenu } = useBaseStore();
+  const { drawer, setDrawer } = useBaseStore();
 
   return (
     <AppBar
@@ -37,7 +37,7 @@ const Navbar = () => {
             Budget Calculator
           </Typography>
 
-          <IconButton color="primary" onClick={() => setMenu(!menu)}>
+          <IconButton color="primary" onClick={() => setDrawer(!drawer)}>
             <Menu></Menu>
           </IconButton>
         </Stack>

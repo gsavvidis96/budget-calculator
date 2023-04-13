@@ -1,8 +1,10 @@
 import {
+  Alert,
   Container,
   CssBaseline,
   Dialog,
   Drawer,
+  Snackbar,
   Stack,
   ThemeProvider,
   useMediaQuery,
@@ -29,8 +31,10 @@ const App = () => {
     togglePrefersDarkMode,
     dialog,
     setDialog,
-    menu,
-    setMenu,
+    drawer,
+    setDrawer,
+    snackbar,
+    setSnackbar,
   } = userBaseStore();
 
   const theme = useMemo(() => {
@@ -70,6 +74,12 @@ const App = () => {
     })();
   });
 
+  const handleSnackbarClose = () => {
+    setSnackbar({
+      open: false,
+    });
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -89,7 +99,7 @@ const App = () => {
           {init ? <Outlet /> : <>loading</>}
         </Container>
 
-        <Drawer open={menu} onClose={() => setMenu(!menu)} anchor="right">
+        <Drawer open={drawer} onClose={() => setDrawer(!drawer)} anchor="right">
           <Sidebar />
         </Drawer>
 
@@ -114,6 +124,21 @@ const App = () => {
             )}
           </Stack>
         </Dialog>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={5000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity={snackbar.type}
+            sx={{ width: "100%" }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Stack>
     </ThemeProvider>
   );

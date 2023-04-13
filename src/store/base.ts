@@ -12,35 +12,49 @@ export interface Dialog {
   component: DialogComponents | null;
   props?: any;
 }
+
+export interface Snackbar {
+  open: boolean;
+  type?: "success" | "error" | "warning";
+  message?: string;
+}
+
 export interface Base {
   prefersDarkMode: boolean;
   dialog: Dialog;
 }
 
 export interface BaseState {
-  menu: boolean;
+  drawer: boolean;
   prefersDarkMode: boolean;
   dialog: Dialog;
-  setMenu: (menu: boolean) => void;
+  snackbar: Snackbar;
+  setDrawer: (drawer: boolean) => void;
   togglePrefersDarkMode: (
     prefersDarkMode: boolean,
     saveToLocalStorage?: boolean
   ) => void;
   setDialog: (dialog: Dialog) => void;
+  setSnackbar: (snackbar: Snackbar) => void;
 }
 
 const useBaseStore = create<BaseState>()(
   immer((set) => ({
-    menu: false,
+    drawer: false,
     prefersDarkMode: false,
     dialog: {
       open: false,
       component: null,
       props: undefined,
     },
-    setMenu: (menu) =>
+    snackbar: {
+      open: false,
+      type: undefined,
+      message: undefined,
+    },
+    setDrawer: (drawer) =>
       set((state) => {
-        state.menu = menu;
+        state.drawer = drawer;
       }),
     togglePrefersDarkMode: (prefersDarkMode, saveToLocalStorage?) =>
       set((state) => {
@@ -59,6 +73,10 @@ const useBaseStore = create<BaseState>()(
           ...dialog,
           props: dialog.props || undefined,
         };
+      }),
+    setSnackbar: (snackbar) =>
+      set((state) => {
+        state.snackbar = { ...state.snackbar, ...snackbar };
       }),
   }))
 );
