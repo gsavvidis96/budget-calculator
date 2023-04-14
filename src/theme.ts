@@ -3,11 +3,13 @@ import { createTheme } from "@mui/material";
 declare module "@mui/material/styles" {
   interface Palette {
     budgetCardBg: Palette["primary"];
+    budgetCardHover: Palette["primary"];
     budgetCardBorder: Palette["primary"];
   }
 
   interface PaletteOptions {
     budgetCardBg?: PaletteOptions["primary"];
+    budgetCardHover: PaletteOptions["primary"];
     budgetCardBorder?: PaletteOptions["primary"];
   }
 }
@@ -29,6 +31,9 @@ const createCustomTheme = (prefersDarkMode: boolean) => {
               main: "#212121",
               light: "#424242",
             },
+            budgetCardHover: {
+              main: "#424242",
+            },
             budgetCardBorder: {
               main: "#424242",
             },
@@ -44,6 +49,9 @@ const createCustomTheme = (prefersDarkMode: boolean) => {
             budgetCardBg: {
               main: "#fafafa",
               light: "#fafafa",
+            },
+            budgetCardHover: {
+              main: "#eeeeee",
             },
             budgetCardBorder: {
               main: "#eeeeee",

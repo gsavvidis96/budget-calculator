@@ -4,6 +4,8 @@ import {
   Stack,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   DeleteOutlineOutlined,
@@ -13,7 +15,7 @@ import {
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import supabase, { Budgets } from "../supabase";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useMemo, useState } from "react";
 import useBaseStore, { DialogComponents } from "../store/base";
 
 const BudgetCard = ({
@@ -25,6 +27,17 @@ const BudgetCard = ({
 }: Budgets["Row"]) => {
   const [loader, setLoader] = useState(false);
   const { setDialog } = useBaseStore();
+  const theme = useTheme();
+  const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
+  const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const titleLimit = useMemo(() => {
+    if (smAndDown) return 12;
+
+    if (mdAndDown) return 20;
+
+    return 100;
+  }, [mdAndDown, smAndDown]);
 
   const onTogglePin = async (event: SyntheticEvent) => {
     event.preventDefault();
@@ -62,6 +75,10 @@ const BudgetCard = ({
         padding: 3,
         textDecoration: "none",
         color: "inherit",
+        transition: "all 0.2s",
+        "&:hover": {
+          backgroundColor: "budgetCardHover.main",
+        },
       }}
       direction="row"
       component={Link}
@@ -70,7 +87,9 @@ const BudgetCard = ({
       <Stack gap={1} sx={{ flexGrow: 1 }}>
         <Stack direction="row" gap={1} alignItems="center">
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {title}
+            {title!.length > titleLimit
+              ? title!.substring(0, titleLimit) + "..."
+              : title}
           </Typography>
 
           {loader ? (
