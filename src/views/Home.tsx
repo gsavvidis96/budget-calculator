@@ -23,7 +23,8 @@ import { Budgets } from "../supabase";
 
 const Home = () => {
   const { setDialog } = userBaseStore();
-  const { budgets, setBudgets, filter } = useBudgetStore();
+  const { budgets, setBudgets, filter, budgetsFetched, setBudgetsFetched } =
+    useBudgetStore();
   const { setSnackbar } = useBaseStore();
   const [loader, setLoader] = useState(false);
   const [search, setSearch] = useState("");
@@ -32,7 +33,15 @@ const Home = () => {
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
 
   const fetchBudgets = useCallback(
-    async (withLoader = true) => {
+    async ({
+      refresh = false,
+      withLoader = true,
+    }: {
+      refresh?: boolean;
+      withLoader?: boolean;
+    } = {}) => {
+      if (budgetsFetched && !refresh) return;
+
       if (withLoader) setLoader(true);
 
       const { data } = await supabase.rpc<
@@ -45,14 +54,16 @@ const Home = () => {
 
       if (data) setBudgets(data);
 
-      if (withLoader) setLoader(false);
+      setBudgetsFetched(true);
+
+      setLoader(false);
     },
-    [setBudgets, filter, search]
+    [budgetsFetched, filter, search, setBudgets, setBudgetsFetched]
   );
 
   const [, cancel] = useDebounce(
     () => {
-      fetchBudgets();
+      fetchBudgets({ refresh: true });
     },
     500,
     [search]
@@ -76,7 +87,8 @@ const Home = () => {
           table: "budgets",
         },
         (payload: RealtimePostgresChangesPayload<Budgets>) => {
-          fetchBudgets(false);
+          if (payload.eventType === "INSERT" || payload.eventType === "UPDATE")
+            fetchBudgets({ refresh: true });
 
           if (payload.eventType === "INSERT")
             setSnackbar({
@@ -107,10 +119,10 @@ const Home = () => {
         await supabase.removeChannel(channel);
       })();
     };
-  }, [fetchBudgets, setSnackbar]);
+  }, [fetchBudgets, setSnackbar, search]);
 
   useUpdateEffect(() => {
-    fetchBudgets();
+    fetchBudgets({ refresh: true });
   }, [filter]);
 
   return (

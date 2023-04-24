@@ -5,6 +5,7 @@ import App from "../App";
 import Login from "../views/Login";
 import Home from "../views/Home";
 import About from "../views/About";
+import Budget from "../views/Budget";
 
 export default createBrowserRouter([
   {
@@ -15,6 +16,14 @@ export default createBrowserRouter([
         element: (
           <AuthGuard requiresAuth={true}>
             <Home />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: "/:id",
+        element: (
+          <AuthGuard requiresAuth={true}>
+            <Budget />
           </AuthGuard>
         ),
       },

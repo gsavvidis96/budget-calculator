@@ -19,14 +19,17 @@ export const filterMap: { [key in BudgetFilter]: string } = {
 export interface BudgetState {
   budgets: Budgets["Row"][];
   filter: BudgetFilter;
+  budgetsFetched: boolean;
   setBudgets: (budgets: Budgets["Row"][]) => void;
   setFilter: (filter: BudgetFilter) => void;
+  setBudgetsFetched: (budgetsFetched: boolean) => void;
 }
 
 const useBudgetStore = create<BudgetState>()(
-  immer((set) => ({
+  immer((set, getState) => ({
     budgets: [],
     filter: BudgetFilter.CREATION_DATE_DESC,
+    budgetsFetched: false,
     setBudgets: (budgets) =>
       set((state) => {
         state.budgets = budgets;
@@ -34,6 +37,10 @@ const useBudgetStore = create<BudgetState>()(
     setFilter: (filter) =>
       set((state) => {
         state.filter = filter;
+      }),
+    setBudgetsFetched: (budgetsFetched) =>
+      set((state) => {
+        state.budgetsFetched = budgetsFetched;
       }),
   }))
 );
