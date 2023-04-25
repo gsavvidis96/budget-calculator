@@ -82,6 +82,7 @@ const Filters = () => {
             variant="text"
             color="inherit"
             onClick={handleOpen}
+            size="small"
           >
             Sort By
           </Button>

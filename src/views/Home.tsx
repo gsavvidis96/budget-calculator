@@ -184,7 +184,7 @@ const Home = () => {
               })
             }
           >
-            <Add sx={{ color: "white" }} />
+            <Add sx={{ color: "white", fontSize: "20px" }} />
           </IconButton>
         ) : (
           <Button
@@ -192,6 +192,7 @@ const Home = () => {
             color="primary"
             sx={{ ml: "auto", alignSelf: "center" }}
             startIcon={<AddOutlined />}
+            size="small"
             onClick={() =>
               setDialog({
                 open: true,
