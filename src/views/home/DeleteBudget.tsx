@@ -17,13 +17,13 @@ const DeleteBudget = ({ id, title }: { id: string; title: string }) => {
 
     setBudgets(budgets.filter((b) => b.id !== id));
 
-    setDialog({ open: false, component: null });
+    setDialog({ open: false });
 
     setLoader(false);
   };
 
   const onClose = () => {
-    setDialog({ open: false, component: null });
+    setDialog({ open: false });
   };
 
   return (

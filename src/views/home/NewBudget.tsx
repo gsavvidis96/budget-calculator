@@ -35,7 +35,7 @@ const NewBudget = () => {
 
     if (error) return setError(true);
 
-    setDialog({ open: false, component: null });
+    setDialog({ open: false });
   };
 
   return (

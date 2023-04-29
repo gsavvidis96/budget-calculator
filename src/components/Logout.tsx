@@ -10,7 +10,7 @@ const Logout = () => {
   const navigate = useNavigate();
 
   const closeDialog = () => {
-    setDialog({ open: false, component: null });
+    setDialog({ open: false });
   };
 
   const handleLogout = async () => {

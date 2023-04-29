@@ -16,7 +16,7 @@ import useBudgetStore, { filterMap } from "../../store/budget";
 import BudgetCard from "./BudgetCard";
 import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import Filters from "../../components/Filters";
+import Filters from "./Filters";
 import useBaseStore from "../../store/base";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { Budgets } from "../../supabase";

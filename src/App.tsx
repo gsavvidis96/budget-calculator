@@ -102,7 +102,7 @@ const App = () => {
         </Drawer>
 
         <Dialog
-          onClose={() => setDialog({ open: false, component: null })}
+          onClose={() => setDialog({ open: false })}
           open={dialog.open}
           fullWidth={mdAndDown}
           maxWidth={false}

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { MouseEvent, useMemo, useState } from "react";
-import useBudgetStore, { BudgetFilter } from "../store/budget";
+import useBudgetStore, { BudgetFilter } from "../../store/budget";
 
 const filters = [
   {

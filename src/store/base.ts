@@ -9,7 +9,7 @@ export enum DialogComponents {
 
 export interface Dialog {
   open: boolean;
-  component: DialogComponents | null;
+  component?: DialogComponents;
   props?: any;
 }
 
@@ -44,7 +44,7 @@ const useBaseStore = create<BaseState>()(
     prefersDarkMode: false,
     dialog: {
       open: false,
-      component: null,
+      component: undefined,
       props: undefined,
     },
     snackbar: {
@@ -69,10 +69,7 @@ const useBaseStore = create<BaseState>()(
       }),
     setDialog: (dialog) =>
       set((state) => {
-        state.dialog = {
-          ...dialog,
-          props: dialog.props || undefined,
-        };
+        state.dialog = dialog;
       }),
     setSnackbar: (snackbar) =>
       set((state) => {
