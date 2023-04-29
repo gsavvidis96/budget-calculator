@@ -46,7 +46,7 @@ const DeleteBudget = ({ id, title }: { id: string; title: string }) => {
         <LoadingButton
           variant="contained"
           size="small"
-          color="error"
+          color="secondary"
           loading={loader}
           onClick={onDelete}
         >

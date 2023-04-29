@@ -65,7 +65,7 @@ const Filters = () => {
 
   return (
     <>
-      <Badge color="secondary" variant="dot" invisible={hideBadge}>
+      <Badge color="primary" variant="dot" invisible={hideBadge}>
         {smAndDown ? (
           <IconButton
             sx={{ alignSelf: "center" }}

@@ -25,7 +25,8 @@ const createCustomTheme = (prefersDarkMode: boolean) => {
               main: "#26a69a",
             },
             secondary: {
-              main: "#26a69a",
+              main: "#e57373",
+              contrastText: "#ffffff",
             },
             budgetCardBg: {
               main: "#212121",
@@ -44,7 +45,8 @@ const createCustomTheme = (prefersDarkMode: boolean) => {
               main: "#26a69a",
             },
             secondary: {
-              main: "#26a69a",
+              main: "#e57373",
+              contrastText: "#ffffff",
             },
             budgetCardBg: {
               main: "#fafafa",

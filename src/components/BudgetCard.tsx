@@ -96,7 +96,7 @@ const BudgetCard = ({
             <CircularProgress size="20px" />
           ) : (
             <Tooltip title={is_pinned ? "Unpin" : "Pin"}>
-              <IconButton size="small" color="secondary" onClick={onTogglePin}>
+              <IconButton size="small" color="primary" onClick={onTogglePin}>
                 {is_pinned ? <PushPin /> : <PushPinOutlined />}
               </IconButton>
             </Tooltip>
@@ -126,7 +126,8 @@ const BudgetCard = ({
 
       <IconButton
         size="small"
-        sx={{ alignSelf: "start", color: "error.light" }}
+        sx={{ alignSelf: "start" }}
+        color="secondary"
         onClick={onOpenDeleteDialog}
       >
         <DeleteOutlineOutlined />

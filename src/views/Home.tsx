@@ -148,7 +148,7 @@ const Home = () => {
             width: mdAndDown ? "auto" : "400px",
             flexGrow: mdAndDown ? "1" : "0",
           }}
-          color="secondary"
+          color="primary"
           size="small"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
