@@ -4,7 +4,6 @@ import supabase, { Enums } from "../../supabase";
 import { useState } from "react";
 import {
   CircularProgress,
-  Dialog,
   Divider,
   IconButton,
   Stack,
@@ -14,21 +13,15 @@ import {
 } from "@mui/material";
 import { PlaylistAdd } from "@mui/icons-material";
 import BudgetSummary from "./BudgetSummary";
-import NewBudgetItem from "./NewBudgetItem";
+import userBaseStore, { DialogComponents } from "../../store/base";
 
 const Budget = () => {
   const { id } = useParams();
   const [currentBudget, setCurrentBudget] = useState<any>(null);
   const [loader, setLoader] = useState(true);
-  const [dialog, setDialog] = useState<{
-    open: boolean;
-    type?: Enums["budget_item_type"];
-  }>({
-    open: false,
-  });
   const theme = useTheme();
-
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
+  const { setDialog } = userBaseStore();
 
   const getBudget = async () => {
     setLoader(true);
@@ -51,13 +44,10 @@ const Budget = () => {
   const openDialog = (type: Enums["budget_item_type"]) => {
     setDialog({
       open: true,
-      type,
-    });
-  };
-
-  const closeDialog = () => {
-    setDialog({
-      open: false,
+      component: DialogComponents.NEW_BUDGET_ITEM,
+      props: {
+        type,
+      },
     });
   };
 
@@ -131,9 +121,9 @@ const Budget = () => {
                   sx={{
                     alignSelf: "center",
                     textAlign: "center",
-                    color: "error.light",
                     fontWeight: 400,
                   }}
+                  color="secondary"
                   variant="h6"
                 >
                   Expenses
@@ -142,11 +132,11 @@ const Budget = () => {
                 <IconButton
                   sx={{
                     alignSelf: "center",
-                    backgroundColor: "error.light",
+                    backgroundColor: "secondary.main",
                     width: "24px",
                     height: "24px",
                     "&:hover": {
-                      backgroundColor: "error.light",
+                      backgroundColor: "secondary.main",
                     },
                   }}
                   onClick={() => openDialog("EXPENSES")}
@@ -158,21 +148,6 @@ const Budget = () => {
               <Divider />
             </Stack>
           </Stack>
-
-          <Dialog
-            onClose={closeDialog}
-            open={dialog.open}
-            fullWidth={mdAndDown}
-            sx={{
-              ".MuiDialog-container .MuiPaper-root": {
-                boxShadow: "none",
-              },
-            }}
-          >
-            <Stack sx={{ width: mdAndDown ? "100%" : "600px", padding: 2 }}>
-              <NewBudgetItem type={dialog.type!} />
-            </Stack>
-          </Dialog>
         </Stack>
       )}
     </>

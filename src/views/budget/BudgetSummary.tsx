@@ -32,7 +32,7 @@ const BudgetSummary = ({ title }: any) => {
       <Stack
         direction="row"
         sx={{
-          backgroundColor: "primary.light",
+          backgroundColor: "primary.main",
           padding: 1,
           borderRadius: "4px",
           width: smAndDown ? "100%" : "350px",
@@ -63,7 +63,7 @@ const BudgetSummary = ({ title }: any) => {
       <Stack
         direction="row"
         sx={{
-          backgroundColor: "error.light",
+          backgroundColor: "secondary.main",
           padding: 1,
           borderRadius: "4px",
           width: smAndDown ? "100%" : "350px",

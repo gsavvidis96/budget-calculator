@@ -22,6 +22,7 @@ import NewBudget from "./views/home/NewBudget";
 import DeleteBudget from "./views/home/DeleteBudget";
 import Sidebar from "./components/Sidebar";
 import Logout from "./components/Logout";
+import NewBudgetItem from "./views/budget/NewBudgetItem";
 
 const App = () => {
   const [init, setInit] = useState(false);
@@ -119,6 +120,10 @@ const App = () => {
 
             {dialog.component === DialogComponents.DELETE_BUDGET && (
               <DeleteBudget {...dialog.props} />
+            )}
+
+            {dialog.component === DialogComponents.NEW_BUDGET_ITEM && (
+              <NewBudgetItem {...dialog.props} />
             )}
           </Stack>
         </Dialog>

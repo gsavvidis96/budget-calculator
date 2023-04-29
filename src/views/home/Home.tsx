@@ -174,6 +174,9 @@ const Home = () => {
               backgroundColor: "primary.main",
               width: "24px",
               height: "24px",
+              "&:hover": {
+                backgroundColor: "primary.main",
+              },
             }}
             size="small"
             color="primary"

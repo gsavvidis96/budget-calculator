@@ -56,7 +56,7 @@ const NewBudgetItem = ({ type }: { type: Enums["budget_item_type"] }) => {
         variant="contained"
         type="submit"
         size="small"
-        color={type === "INCOME" ? "primary" : "error"}
+        color={type === "INCOME" ? "primary" : "secondary"}
       >
         Add
       </LoadingButton>
