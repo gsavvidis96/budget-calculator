@@ -36,6 +36,33 @@ export interface Budgets {
   };
 }
 
+export interface BudgetItems {
+  Row: {
+    budget_id: string;
+    created_at: string;
+    description: string;
+    id: string;
+    type: Enums["budget_item_type"];
+    value: number;
+  };
+  Insert: {
+    budget_id: string;
+    created_at?: string;
+    description: string;
+    id?: string;
+    type: Enums["budget_item_type"];
+    value: number;
+  };
+  Update: {
+    budget_id?: string;
+    created_at?: string;
+    description?: string;
+    id?: string;
+    type?: Enums["budget_item_type"];
+    value?: number;
+  };
+}
+
 export interface Functions {
   get_budgets_with_balance: {
     Args: {

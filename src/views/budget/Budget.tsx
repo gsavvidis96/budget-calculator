@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useMount } from "react-use";
-import supabase from "../supabase";
+import supabase, { Enums } from "../../supabase";
 import { useState } from "react";
 import {
   CircularProgress,
+  Dialog,
   Divider,
   IconButton,
   Stack,
@@ -12,13 +13,21 @@ import {
   useTheme,
 } from "@mui/material";
 import { PlaylistAdd } from "@mui/icons-material";
+import BudgetSummary from "./BudgetSummary";
+import NewBudgetItem from "./NewBudgetItem";
 
 const Budget = () => {
   const { id } = useParams();
   const [currentBudget, setCurrentBudget] = useState<any>(null);
   const [loader, setLoader] = useState(true);
+  const [dialog, setDialog] = useState<{
+    open: boolean;
+    type?: Enums["budget_item_type"];
+  }>({
+    open: false,
+  });
   const theme = useTheme();
-  const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
 
   const getBudget = async () => {
@@ -39,6 +48,19 @@ const Budget = () => {
     getBudget();
   });
 
+  const openDialog = (type: Enums["budget_item_type"]) => {
+    setDialog({
+      open: true,
+      type,
+    });
+  };
+
+  const closeDialog = () => {
+    setDialog({
+      open: false,
+    });
+  };
+
   return (
     <>
       {loader ? (
@@ -50,92 +72,7 @@ const Budget = () => {
           }}
           gap={2}
         >
-          <Stack
-            sx={{
-              padding: 3,
-              borderRadius: "4px",
-              backgroundColor: "budgetCardBg.light",
-              border: "1px solid",
-              borderColor: "budgetCardBorder.main",
-            }}
-            gap={1}
-          >
-            <Typography
-              sx={{ alignSelf: "center", textAlign: "center" }}
-              variant="body1"
-            >
-              {currentBudget.title}
-            </Typography>
-
-            <Typography
-              variant="h4"
-              sx={{ alignSelf: "center", textAlign: "center" }}
-            >
-              0.00 €
-            </Typography>
-
-            <Stack
-              direction="row"
-              sx={{
-                backgroundColor: "primary.light",
-                padding: 1,
-                borderRadius: "4px",
-                width: smAndDown ? "100%" : "350px",
-                alignItems: "center",
-                alignSelf: "center",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ alignSelf: "center", textAlign: "center", mr: "auto" }}
-              >
-                INCOME
-              </Typography>
-
-              <Typography
-                variant="body2"
-                sx={{
-                  alignSelf: "center",
-                  textAlign: "center",
-                  color: "white",
-                  fontWeight: 500,
-                }}
-              >
-                + 0.00
-              </Typography>
-            </Stack>
-
-            <Stack
-              direction="row"
-              sx={{
-                backgroundColor: "error.light",
-                padding: 1,
-                borderRadius: "4px",
-                width: smAndDown ? "100%" : "350px",
-                alignItems: "center",
-                alignSelf: "center",
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ alignSelf: "center", textAlign: "center", mr: "auto" }}
-              >
-                EXPENSES
-              </Typography>
-
-              <Typography
-                variant="body2"
-                sx={{
-                  alignSelf: "center",
-                  textAlign: "center",
-                  color: "white",
-                  fontWeight: 500,
-                }}
-              >
-                - 0.00
-              </Typography>
-            </Stack>
-          </Stack>
+          <BudgetSummary {...currentBudget} />
 
           <Stack
             gap={4}
@@ -171,7 +108,11 @@ const Budget = () => {
                     backgroundColor: "primary.main",
                     width: "24px",
                     height: "24px",
+                    "&:hover": {
+                      backgroundColor: "primary.main",
+                    },
                   }}
+                  onClick={() => openDialog("INCOME")}
                 >
                   <PlaylistAdd sx={{ color: "white", fontSize: "20px" }} />
                 </IconButton>
@@ -204,7 +145,11 @@ const Budget = () => {
                     backgroundColor: "error.light",
                     width: "24px",
                     height: "24px",
+                    "&:hover": {
+                      backgroundColor: "error.light",
+                    },
                   }}
+                  onClick={() => openDialog("EXPENSES")}
                 >
                   <PlaylistAdd sx={{ color: "white", fontSize: "20px" }} />
                 </IconButton>
@@ -213,6 +158,21 @@ const Budget = () => {
               <Divider />
             </Stack>
           </Stack>
+
+          <Dialog
+            onClose={closeDialog}
+            open={dialog.open}
+            fullWidth={mdAndDown}
+            sx={{
+              ".MuiDialog-container .MuiPaper-root": {
+                boxShadow: "none",
+              },
+            }}
+          >
+            <Stack sx={{ width: mdAndDown ? "100%" : "600px", padding: 2 }}>
+              <NewBudgetItem type={dialog.type!} />
+            </Stack>
+          </Dialog>
         </Stack>
       )}
     </>

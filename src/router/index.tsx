@@ -5,7 +5,7 @@ import App from "../App";
 import Login from "../views/Login";
 import Home from "../views/Home";
 import About from "../views/About";
-import Budget from "../views/Budget";
+import Budget from "../views/budget/Budget";
 
 export default createBrowserRouter([
   {
