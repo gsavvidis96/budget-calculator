@@ -11,27 +11,27 @@ export interface Enums {
 
 export interface Budgets {
   Row: {
-    created_at: string | null;
+    created_at: string;
     id: string;
     is_pinned: boolean;
-    title: string | null;
+    title: string;
     user_id: string;
     total_income: number;
     total_expenses: number;
     balance: number;
   };
   Insert: {
-    created_at?: string | null;
+    created_at?: string;
     id?: string;
     is_pinned?: boolean;
-    title?: string | null;
+    title: string;
     user_id?: string;
   };
   Update: {
-    created_at?: string | null;
+    created_at?: string;
     id?: string;
     is_pinned?: boolean;
-    title?: string | null;
+    title?: string;
     user_id?: string;
   };
 }

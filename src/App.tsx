@@ -60,18 +60,16 @@ const App = () => {
     }
   });
 
-  useMount(() => {
-    (async () => {
-      const { data } = await supabase.auth.getSession();
+  useMount(async () => {
+    const { data } = await supabase.auth.getSession();
 
-      if (data.session)
-        setUser({
-          id: data.session.user!.id,
-          email: data.session.user!.email!,
-        });
+    if (data.session)
+      setUser({
+        id: data.session.user!.id,
+        email: data.session.user!.email!,
+      });
 
-      setInit(true);
-    })();
+    setInit(true);
   });
 
   const handleSnackbarClose = () => {
