@@ -3,7 +3,7 @@ import AuthGuard from "./AuthGuard";
 
 import App from "../App";
 import Login from "../views/Login";
-import Home from "../views/Home";
+import Home from "../views/home/Home";
 import About from "../views/About";
 import Budget from "../views/budget/Budget";
 

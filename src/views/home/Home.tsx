@@ -9,17 +9,17 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Add, AddOutlined, Close } from "@mui/icons-material";
-import userBaseStore, { DialogComponents } from "../store/base";
-import supabase, { Functions } from "../supabase";
+import userBaseStore, { DialogComponents } from "../../store/base";
+import supabase, { Functions } from "../../supabase";
 import { useDebounce, useMount, useUpdateEffect } from "react-use";
-import useBudgetStore, { filterMap } from "../store/budget";
-import BudgetCard from "../components/BudgetCard";
+import useBudgetStore, { filterMap } from "../../store/budget";
+import BudgetCard from "./BudgetCard";
 import { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import Filters from "../components/Filters";
-import useBaseStore from "../store/base";
+import Filters from "../../components/Filters";
+import useBaseStore from "../../store/base";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
-import { Budgets } from "../supabase";
+import { Budgets } from "../../supabase";
 
 const Home = () => {
   const { setDialog } = userBaseStore();

@@ -14,9 +14,9 @@ import {
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
-import supabase, { Budgets } from "../supabase";
+import supabase, { Budgets } from "../../supabase";
 import { SyntheticEvent, useMemo, useState } from "react";
-import useBaseStore, { DialogComponents } from "../store/base";
+import useBaseStore, { DialogComponents } from "../../store/base";
 
 const BudgetCard = ({
   created_at,

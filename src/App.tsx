@@ -18,10 +18,10 @@ import userBaseStore, { DialogComponents } from "./store/base";
 import createCustomTheme from "./theme";
 import { useMemo } from "react";
 import { useMount } from "react-use";
-import NewBudget from "./views/NewBudget";
-import DeleteBudget from "./views/DeleteBudget";
+import NewBudget from "./views/home/NewBudget";
+import DeleteBudget from "./views/home/DeleteBudget";
 import Sidebar from "./components/Sidebar";
-import Logout from "./views/Logout";
+import Logout from "./components/Logout";
 
 const App = () => {
   const [init, setInit] = useState(false);

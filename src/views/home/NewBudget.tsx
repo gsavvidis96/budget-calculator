@@ -7,8 +7,8 @@ import {
   Typography,
 } from "@mui/material";
 import { SyntheticEvent, useEffect, useState } from "react";
-import supabase, { Budgets } from "../supabase";
-import useBaseStore from "../store/base";
+import supabase, { Budgets } from "../../supabase";
+import useBaseStore from "../../store/base";
 import { LoadingButton } from "@mui/lab";
 
 const NewBudget = () => {

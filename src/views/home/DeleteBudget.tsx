@@ -1,9 +1,9 @@
 import { Button, Stack, Typography } from "@mui/material";
-import useBaseStore from "../store/base";
+import useBaseStore from "../../store/base";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
-import supabase, { Budgets } from "../supabase";
-import useBudgetStore from "../store/budget";
+import supabase, { Budgets } from "../../supabase";
+import useBudgetStore from "../../store/budget";
 
 const DeleteBudget = ({ id, title }: { id: string; title: string }) => {
   const { setDialog } = useBaseStore();
