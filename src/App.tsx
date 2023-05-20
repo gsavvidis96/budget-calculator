@@ -62,6 +62,11 @@ const App = () => {
   });
 
   useMount(async () => {
+    // Remove the hash from the URL... supabase provider login adds it...
+    if (window.location.hash && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.href.split("#")[0]);
+    }
+
     const { data } = await supabase.auth.getSession();
 
     if (data.session)

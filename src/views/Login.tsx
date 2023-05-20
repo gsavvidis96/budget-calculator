@@ -1,41 +1,40 @@
-import { Button, Stack } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import supabase from "../supabase";
-import useAuthStore from "../store/auth";
-import { useNavigate } from "react-router-dom";
+import GoogleIcon from "../components/GoogleIcon";
 
 const Login = () => {
-  const { setUser } = useAuthStore();
-  const navigate = useNavigate();
-
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      // email: "gsavvidis96@gmail.com",
-      email: "savvigiannhs@gmail.com",
-      password: "123123",
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
     });
 
     if (error) return;
-
-    setUser({
-      id: data!.user!.id,
-      email: data!.user!.email!,
-    });
-
-    navigate("/");
   };
 
   return (
     <Stack
       sx={{
         flexGrow: 1,
+        alignItems: "center",
       }}
     >
+      <Typography variant="h6" sx={{ marginBottom: 1 }}>
+        Welcome to Budget Calculator
+      </Typography>
+
+      <Typography sx={{ marginBottom: 3 }}>
+        In order to use the application, please sign in with your google
+        account.
+      </Typography>
+
       <Button
         onClick={handleLogin}
         sx={{ alignSelf: "center" }}
-        variant="contained"
+        variant="outlined"
+        startIcon={<GoogleIcon fontSize="large" />}
+        color="inherit"
       >
-        login
+        Sign in with Google
       </Button>
     </Stack>
   );
