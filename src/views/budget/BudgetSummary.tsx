@@ -1,6 +1,19 @@
-import { Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Chip,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { Functions } from "../../supabase";
 
-const BudgetSummary = ({ title }: any) => {
+const BudgetSummary = ({
+  title,
+  balance,
+  total_expenses,
+  total_income,
+  expense_percentage,
+}: Functions["get_budget"]["Returns"]) => {
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -26,7 +39,7 @@ const BudgetSummary = ({ title }: any) => {
         variant="h4"
         sx={{ alignSelf: "center", textAlign: "center" }}
       >
-        0.00 €
+        {balance.toFixed(2)} €
       </Typography>
 
       <Stack
@@ -56,7 +69,7 @@ const BudgetSummary = ({ title }: any) => {
             fontWeight: 500,
           }}
         >
-          + 0.00
+          + {total_income.toFixed(2)} €
         </Typography>
       </Stack>
 
@@ -70,6 +83,7 @@ const BudgetSummary = ({ title }: any) => {
           alignItems: "center",
           alignSelf: "center",
         }}
+        gap={1}
       >
         <Typography
           variant="body2"
@@ -77,6 +91,14 @@ const BudgetSummary = ({ title }: any) => {
         >
           EXPENSES
         </Typography>
+
+        {Boolean(total_income) && (
+          <Chip
+            size="small"
+            label={`${expense_percentage.toFixed(2)}%`}
+            sx={{ width: "60px" }}
+          />
+        )}
 
         <Typography
           variant="body2"
@@ -87,7 +109,7 @@ const BudgetSummary = ({ title }: any) => {
             fontWeight: 500,
           }}
         >
-          - 0.00
+          - {total_expenses.toFixed(2)} €
         </Typography>
       </Stack>
     </Stack>

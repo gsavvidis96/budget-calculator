@@ -1,4 +1,8 @@
 supabase error handling
-migrations and envs
 
 ===================================
+
+drag and drop budget items
+edit budget items
+
+general review - code style consistency

@@ -42,6 +42,7 @@ export interface BudgetItems {
     created_at: string;
     description: string;
     id: string;
+    percentage_to_income?: number;
     type: Enums["budget_item_type"];
     value: number;
   };
@@ -79,6 +80,24 @@ export interface Functions {
       total_expenses: number;
       balance: number;
     }[];
+  };
+  get_budget: {
+    Args: {
+      b_id: string;
+    };
+    Returns: {
+      id: string;
+      created_at: string;
+      title: string;
+      is_pinned: boolean;
+      user_id: string;
+      total_income: number;
+      total_expenses: number;
+      balance: number;
+      income_items: BudgetItems["Row"][];
+      expense_items: BudgetItems["Row"][];
+      expense_percentage: number;
+    };
   };
 }
 

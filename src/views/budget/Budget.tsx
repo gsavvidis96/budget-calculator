@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useMount } from "react-use";
-import supabase, { Enums } from "../../supabase";
-import { useState } from "react";
+import supabase, { BudgetItems, Enums, Functions } from "../../supabase";
+import { useCallback, useEffect, useState } from "react";
 import {
   CircularProgress,
   Divider,
@@ -14,28 +14,56 @@ import {
 import { PlaylistAdd } from "@mui/icons-material";
 import BudgetSummary from "./BudgetSummary";
 import userBaseStore, { DialogComponents } from "../../store/base";
+import BudgetItem from "./BudgetItem";
+import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 const Budget = () => {
   const { id } = useParams();
-  const [currentBudget, setCurrentBudget] = useState<any>(null);
+  const [currentBudget, setCurrentBudget] = useState<
+    Functions["get_budget"]["Returns"] | null
+  >(null);
   const [loader, setLoader] = useState(true);
   const theme = useTheme();
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
   const { setDialog } = userBaseStore();
 
-  const getBudget = async () => {
+  const getBudget = useCallback(async () => {
     setLoader(true);
 
     const { data } = await supabase
-      .from("budgets")
-      .select()
-      .eq("id", id)
+      .rpc<"get_budget", Functions["get_budget"]>("get_budget", {
+        b_id: id!,
+      })
       .single();
 
     setCurrentBudget(data);
 
     setLoader(false);
-  };
+  }, [id]);
+
+  // subscribe to budgets
+  useEffect(() => {
+    const channel = supabase
+      .channel("table-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "budget_items",
+        },
+        (payload: RealtimePostgresChangesPayload<BudgetItems>) => {
+          getBudget();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      (async () => {
+        await supabase.removeChannel(channel);
+      })();
+    };
+  }, [getBudget]);
 
   useMount(() => {
     getBudget();
@@ -60,21 +88,12 @@ const Budget = () => {
           sx={{
             flexGrow: 1,
           }}
-          gap={2}
+          gap={4}
         >
-          <BudgetSummary {...currentBudget} />
+          <BudgetSummary {...currentBudget!} />
 
-          <Stack
-            gap={4}
-            sx={{
-              border: "1px solid",
-              borderColor: "budgetCardBorder.main",
-              borderRadius: "4px",
-              padding: 2,
-            }}
-            direction={mdAndDown ? "column" : "row"}
-          >
-            <Stack gap={1} sx={{ flex: 1 }}>
+          <Stack gap={5} direction={mdAndDown ? "column" : "row"}>
+            <Stack gap={3} sx={{ flex: 1 }}>
               <Stack
                 direction="row"
                 sx={{ alignItems: "center", justifyContent: "center" }}
@@ -108,10 +127,16 @@ const Budget = () => {
                 </IconButton>
               </Stack>
 
-              <Divider />
+              <Stack>
+                <Divider />
+
+                {currentBudget!.income_items.map((i) => {
+                  return <BudgetItem {...i} key={i.id} />;
+                })}
+              </Stack>
             </Stack>
 
-            <Stack sx={{ flex: 1 }} gap={1}>
+            <Stack sx={{ flex: 1 }} gap={3}>
               <Stack
                 direction="row"
                 sx={{ alignItems: "center", justifyContent: "center" }}
@@ -145,7 +170,13 @@ const Budget = () => {
                 </IconButton>
               </Stack>
 
-              <Divider />
+              <Stack>
+                <Divider />
+
+                {currentBudget!.expense_items.map((e) => {
+                  return <BudgetItem {...e} key={e.id} />;
+                })}
+              </Stack>
             </Stack>
           </Stack>
         </Stack>
