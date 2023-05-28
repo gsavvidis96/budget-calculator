@@ -3,7 +3,6 @@ import { immer } from "zustand/middleware/immer";
 
 export enum DialogComponents {
   NEW_BUDGET,
-  DELETE_BUDGET,
   NEW_BUDGET_ITEM,
   LOGOUT,
 }

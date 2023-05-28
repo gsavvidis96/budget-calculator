@@ -1,6 +1,8 @@
 import {
+  Button,
   CircularProgress,
   IconButton,
+  Menu,
   Stack,
   Tooltip,
   Typography,
@@ -15,8 +17,9 @@ import {
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import supabase, { Budgets } from "../../supabase";
-import { SyntheticEvent, useMemo, useState } from "react";
-import useBaseStore, { DialogComponents } from "../../store/base";
+import { SyntheticEvent, useMemo, useState, MouseEvent } from "react";
+import { LoadingButton } from "@mui/lab";
+import useBudgetStore from "../../store/budget";
 
 const BudgetCard = ({
   created_at,
@@ -25,11 +28,13 @@ const BudgetCard = ({
   title,
   balance,
 }: Budgets["Row"]) => {
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const [loader, setLoader] = useState(false);
-  const { setDialog } = useBaseStore();
+  const [deleteLoader, setDeleteLoader] = useState(false);
   const theme = useTheme();
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const { budgets, setBudgets } = useBudgetStore();
 
   const titleLimit = useMemo(() => {
     if (smAndDown) return 12;
@@ -38,6 +43,10 @@ const BudgetCard = ({
 
     return 100;
   }, [mdAndDown, smAndDown]);
+
+  const open = useMemo(() => {
+    return Boolean(anchorEl);
+  }, [anchorEl]);
 
   const onTogglePin = async (event: SyntheticEvent) => {
     event.preventDefault();
@@ -52,17 +61,34 @@ const BudgetCard = ({
     setLoader(false);
   };
 
-  const onOpenDeleteDialog = (event: SyntheticEvent) => {
+  const handleOpen = (event: MouseEvent) => {
     event.preventDefault();
 
-    setDialog({
-      open: true,
-      component: DialogComponents.DELETE_BUDGET,
-      props: {
-        id,
-        title,
-      },
-    });
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCloseButton = (event: MouseEvent) => {
+    event.preventDefault();
+
+    handleClose();
+  };
+
+  const onDelete = async (event: MouseEvent) => {
+    event.preventDefault();
+
+    setDeleteLoader(true);
+
+    await supabase.from<"budgets", Budgets>("budgets").delete().eq("id", id);
+
+    setBudgets(budgets.filter((b) => b.id !== id));
+
+    handleClose();
+
+    setDeleteLoader(false);
   };
 
   return (
@@ -128,10 +154,41 @@ const BudgetCard = ({
         size="small"
         sx={{ alignSelf: "start" }}
         color="secondary"
-        onClick={onOpenDeleteDialog}
+        onClick={handleOpen}
       >
         <DeleteOutlineOutlined />
       </IconButton>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleCloseButton}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}
+      >
+        <Stack sx={{ padding: 1 }} gap={2}>
+          <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
+            Are you sure you want to delete budget "<strong>{title}</strong>" ?
+          </Typography>
+
+          <Stack direction="row" gap={1} sx={{ justifyContent: "center" }}>
+            <Button size="small" onClick={handleCloseButton}>
+              Cancel
+            </Button>
+
+            <LoadingButton
+              variant="contained"
+              size="small"
+              color="secondary"
+              loading={deleteLoader}
+              onClick={onDelete}
+            >
+              Delete
+            </LoadingButton>
+          </Stack>
+        </Stack>
+      </Menu>
     </Stack>
   );
 };

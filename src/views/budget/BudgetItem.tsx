@@ -45,8 +45,6 @@ const BudgetItem = ({
       .delete()
       .eq("id", id);
 
-    // setBudgets(budgets.filter((b) => b.id !== id));
-
     handleClose();
 
     setLoader(false);
