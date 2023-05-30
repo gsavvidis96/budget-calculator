@@ -1,6 +1,7 @@
 import {
   Button,
   CircularProgress,
+  Dialog,
   IconButton,
   InputAdornment,
   Stack,
@@ -9,7 +10,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { Add, AddOutlined, Close } from "@mui/icons-material";
-import userBaseStore, { DialogComponents } from "../../store/base";
 import supabase, { Functions } from "../../supabase";
 import { useDebounce, useMount, useUpdateEffect } from "react-use";
 import useBudgetStore, { filterMap } from "../../store/budget";
@@ -20,14 +20,15 @@ import Filters from "./Filters";
 import useBaseStore from "../../store/base";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { Budgets } from "../../supabase";
+import NewBudget from "./NewBudget";
 
 const Home = () => {
-  const { setDialog } = userBaseStore();
   const { budgets, setBudgets, filter, budgetsFetched, setBudgetsFetched } =
     useBudgetStore();
   const { setSnackbar } = useBaseStore();
   const [loader, setLoader] = useState(false);
   const [search, setSearch] = useState("");
+  const [dialog, setDialog] = useState(false);
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
@@ -180,12 +181,7 @@ const Home = () => {
             }}
             size="small"
             color="primary"
-            onClick={() =>
-              setDialog({
-                open: true,
-                component: DialogComponents.NEW_BUDGET,
-              })
-            }
+            onClick={() => setDialog(true)}
           >
             <Add sx={{ color: "white", fontSize: "20px" }} />
           </IconButton>
@@ -196,12 +192,7 @@ const Home = () => {
             sx={{ ml: "auto", alignSelf: "center" }}
             startIcon={<AddOutlined />}
             size="small"
-            onClick={() =>
-              setDialog({
-                open: true,
-                component: DialogComponents.NEW_BUDGET,
-              })
-            }
+            onClick={() => setDialog(true)}
           >
             New
           </Button>
@@ -223,6 +214,25 @@ const Home = () => {
           )}
         </Stack>
       )}
+
+      <Dialog
+        onClose={() => setDialog(false)}
+        open={dialog}
+        fullWidth={mdAndDown}
+        fullScreen={smAndDown}
+        maxWidth={false}
+        sx={{
+          ".MuiDialog-container .MuiPaper-root": {
+            boxShadow: "none",
+          },
+        }}
+      >
+        <Stack
+          sx={{ width: mdAndDown ? "100%" : "600px", padding: 2, flex: 1 }}
+        >
+          <NewBudget setDialog={setDialog} />
+        </Stack>
+      </Dialog>
     </Stack>
   );
 };

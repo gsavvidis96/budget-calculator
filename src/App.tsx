@@ -18,7 +18,6 @@ import userBaseStore, { DialogComponents } from "./store/base";
 import createCustomTheme from "./theme";
 import { useMemo } from "react";
 import { useMount } from "react-use";
-import NewBudget from "./views/home/NewBudget";
 import Sidebar from "./components/Sidebar";
 import Logout from "./components/Logout";
 import NewBudgetItem from "./views/budget/NewBudgetItem";
@@ -116,11 +115,10 @@ const App = () => {
               boxShadow: "none",
             },
           }}
+          fullScreen
         >
           <Stack sx={{ width: mdAndDown ? "100%" : "600px", padding: 2 }}>
             {dialog.component === DialogComponents.LOGOUT && <Logout />}
-
-            {dialog.component === DialogComponents.NEW_BUDGET && <NewBudget />}
 
             {dialog.component === DialogComponents.NEW_BUDGET_ITEM && (
               <NewBudgetItem {...dialog.props} />
