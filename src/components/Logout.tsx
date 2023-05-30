@@ -1,19 +1,22 @@
 import { Button, Stack, Typography } from "@mui/material";
-import useBaseStore from "../store/base";
 import useAuthStore from "../store/auth";
 import supabase from "../supabase";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { LoadingButton } from "@mui/lab";
 
-const Logout = () => {
-  const { setDialog } = useBaseStore();
+const Logout = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
+  const [loader, setLoader] = useState(false);
   const { setUser } = useAuthStore();
   const navigate = useNavigate();
 
   const closeDialog = () => {
-    setDialog({ open: false });
+    setDialog(false);
   };
 
   const handleLogout = async () => {
+    setLoader(true);
+
     await supabase.auth.signOut();
 
     setUser(null);
@@ -21,6 +24,8 @@ const Logout = () => {
     navigate("/login");
 
     closeDialog();
+
+    setLoader(false);
   };
 
   return (
@@ -40,14 +45,15 @@ const Logout = () => {
           Cancel
         </Button>
 
-        <Button
+        <LoadingButton
           size="small"
           color="primary"
           variant="contained"
           onClick={handleLogout}
+          loading={loader}
         >
           Logout
-        </Button>
+        </LoadingButton>
       </Stack>
     </Stack>
   );

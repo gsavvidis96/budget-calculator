@@ -19,7 +19,6 @@ import createCustomTheme from "./theme";
 import { useMemo } from "react";
 import { useMount } from "react-use";
 import Sidebar from "./components/Sidebar";
-import Logout from "./components/Logout";
 import NewBudgetItem from "./views/budget/NewBudgetItem";
 
 const App = () => {
@@ -101,7 +100,12 @@ const App = () => {
           {init ? <Outlet /> : <>loading</>}
         </Container>
 
-        <Drawer open={drawer} onClose={() => setDrawer(!drawer)} anchor="right">
+        <Drawer
+          open={drawer}
+          onClose={() => setDrawer(!drawer)}
+          anchor="right"
+          keepMounted={true}
+        >
           <Sidebar />
         </Drawer>
 
@@ -118,8 +122,6 @@ const App = () => {
           fullScreen
         >
           <Stack sx={{ width: mdAndDown ? "100%" : "600px", padding: 2 }}>
-            {dialog.component === DialogComponents.LOGOUT && <Logout />}
-
             {dialog.component === DialogComponents.NEW_BUDGET_ITEM && (
               <NewBudgetItem {...dialog.props} />
             )}
