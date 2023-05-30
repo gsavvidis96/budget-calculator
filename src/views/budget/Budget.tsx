@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useMount } from "react-use";
-import supabase, { BudgetItems, Enums, Functions } from "../../supabase";
+import supabase, { Enums, Functions } from "../../supabase";
 import { useCallback, useEffect, useState } from "react";
 import {
   CircularProgress,
+  Dialog,
   Divider,
   IconButton,
   Stack,
@@ -13,9 +14,13 @@ import {
 } from "@mui/material";
 import { PlaylistAdd } from "@mui/icons-material";
 import BudgetSummary from "./BudgetSummary";
-import userBaseStore, { DialogComponents } from "../../store/base";
 import BudgetItem from "./BudgetItem";
-import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import NewBudgetItem from "./NewBudgetItem";
+
+export interface newBudgetItemDialog {
+  open: boolean;
+  type?: Enums["budget_item_type"];
+}
 
 const Budget = () => {
   const { id } = useParams();
@@ -25,7 +30,11 @@ const Budget = () => {
   const [loader, setLoader] = useState(true);
   const theme = useTheme();
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
-  const { setDialog } = userBaseStore();
+  const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const [dialog, setDialog] = useState<newBudgetItemDialog>({
+    open: false,
+    type: undefined,
+  });
 
   const getBudget = useCallback(async () => {
     setLoader(true);
@@ -52,7 +61,7 @@ const Budget = () => {
           schema: "public",
           table: "budget_items",
         },
-        (payload: RealtimePostgresChangesPayload<BudgetItems>) => {
+        () => {
           getBudget();
         }
       )
@@ -72,10 +81,7 @@ const Budget = () => {
   const openDialog = (type: Enums["budget_item_type"]) => {
     setDialog({
       open: true,
-      component: DialogComponents.NEW_BUDGET_ITEM,
-      props: {
-        type,
-      },
+      type,
     });
   };
 
@@ -181,6 +187,27 @@ const Budget = () => {
           </Stack>
         </Stack>
       )}
+
+      <Dialog
+        onClose={() => setDialog({ open: false })}
+        open={dialog.open}
+        fullWidth={mdAndDown}
+        fullScreen={smAndDown}
+        maxWidth={false}
+        sx={{
+          ".MuiDialog-container .MuiPaper-root": {
+            boxShadow: "none",
+          },
+        }}
+      >
+        <Stack
+          sx={{ width: mdAndDown ? "100%" : "600px", padding: 2, flex: 1 }}
+        >
+          {dialog.type && (
+            <NewBudgetItem type={dialog.type} setDialog={setDialog} />
+          )}
+        </Stack>
+      </Dialog>
     </>
   );
 };

@@ -2,24 +2,21 @@ import {
   Alert,
   Container,
   CssBaseline,
-  Dialog,
   Drawer,
   Snackbar,
   Stack,
   ThemeProvider,
-  useMediaQuery,
 } from "@mui/material";
 import Navbar from "./components/Navbar";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import supabase from "./supabase";
 import useAuthStore from "./store/auth";
-import userBaseStore, { DialogComponents } from "./store/base";
+import userBaseStore from "./store/base";
 import createCustomTheme from "./theme";
 import { useMemo } from "react";
 import { useMount } from "react-use";
 import Sidebar from "./components/Sidebar";
-import NewBudgetItem from "./views/budget/NewBudgetItem";
 
 const App = () => {
   const [init, setInit] = useState(false);
@@ -27,8 +24,6 @@ const App = () => {
   const {
     prefersDarkMode,
     togglePrefersDarkMode,
-    dialog,
-    setDialog,
     drawer,
     setDrawer,
     snackbar,
@@ -38,8 +33,6 @@ const App = () => {
   const theme = useMemo(() => {
     return createCustomTheme(prefersDarkMode);
   }, [prefersDarkMode]);
-
-  const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
 
   useMount(() => {
     const prefersDarkModeLocalStorage = JSON.parse(
@@ -108,25 +101,6 @@ const App = () => {
         >
           <Sidebar />
         </Drawer>
-
-        <Dialog
-          onClose={() => setDialog({ open: false })}
-          open={dialog.open}
-          fullWidth={mdAndDown}
-          maxWidth={false}
-          sx={{
-            ".MuiDialog-container .MuiPaper-root": {
-              boxShadow: "none",
-            },
-          }}
-          fullScreen
-        >
-          <Stack sx={{ width: mdAndDown ? "100%" : "600px", padding: 2 }}>
-            {dialog.component === DialogComponents.NEW_BUDGET_ITEM && (
-              <NewBudgetItem {...dialog.props} />
-            )}
-          </Stack>
-        </Dialog>
 
         <Snackbar
           open={snackbar.open}
