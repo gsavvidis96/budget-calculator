@@ -52,7 +52,6 @@ const BudgetItem = ({
 
   return (
     <Stack
-      gap={1}
       sx={{
         borderRadius: "4px",
         transition: "all 0.2s",
@@ -65,7 +64,7 @@ const BudgetItem = ({
         direction="row"
         sx={{
           alignItems: "center",
-          pt: 2,
+          py: 2,
           px: 1,
         }}
         gap={1}

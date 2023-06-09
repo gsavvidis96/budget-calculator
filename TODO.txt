@@ -3,6 +3,7 @@ supabase error handling
 ===================================
 
 drag and drop budget items
-edit budget items
+edit budget items titles
+edit budget titles
 
 general review - code style consistency

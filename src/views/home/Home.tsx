@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   CircularProgress,
   Dialog,
@@ -6,7 +7,6 @@ import {
   InputAdornment,
   Stack,
   TextField,
-  Typography,
   useMediaQuery,
 } from "@mui/material";
 import { Add, AddOutlined, Close } from "@mui/icons-material";
@@ -207,10 +207,10 @@ const Home = () => {
             return <BudgetCard {...budget} key={budget.id} />;
           })}
 
-          {budgets.length === 0 && (
-            <Typography variant="h4" sx={{ mt: 4 }}>
-              No Budgets found.
-            </Typography>
+          {budgetsFetched && budgets.length === 0 && (
+            <Alert severity="info">
+              <strong>You have no budgets yet</strong>
+            </Alert>
           )}
         </Stack>
       )}

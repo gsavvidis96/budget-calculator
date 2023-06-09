@@ -41,8 +41,14 @@ const BudgetCard = ({
 
     if (mdAndDown) return 20;
 
-    return 100;
+    return 60;
   }, [mdAndDown, smAndDown]);
+
+  const displayedTitle = useMemo(() => {
+    return title!.length > titleLimit
+      ? title!.substring(0, titleLimit) + "..."
+      : title;
+  }, [title, titleLimit]);
 
   const open = useMemo(() => {
     return Boolean(anchorEl);
@@ -113,9 +119,7 @@ const BudgetCard = ({
       <Stack gap={1} sx={{ flexGrow: 1 }}>
         <Stack direction="row" gap={1} alignItems="center">
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {title!.length > titleLimit
-              ? title!.substring(0, titleLimit) + "..."
-              : title}
+            {displayedTitle}
           </Typography>
 
           {loader ? (
@@ -169,7 +173,8 @@ const BudgetCard = ({
       >
         <Stack sx={{ padding: 1 }} gap={2}>
           <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
-            Are you sure you want to delete budget "<strong>{title}</strong>" ?
+            Are you sure you want to delete budget "
+            <strong>{displayedTitle}</strong>" ?
           </Typography>
 
           <Stack direction="row" gap={1} sx={{ justifyContent: "center" }}>
