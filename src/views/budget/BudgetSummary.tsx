@@ -39,7 +39,7 @@ const BudgetSummary = ({
         variant="h4"
         sx={{ alignSelf: "center", textAlign: "center" }}
       >
-        {balance.toFixed(2)} €
+        {balance.toFixed(2)}€
       </Typography>
 
       <Stack
@@ -69,7 +69,7 @@ const BudgetSummary = ({
             fontWeight: 500,
           }}
         >
-          + {total_income.toFixed(2)} €
+          +{total_income.toFixed(2)}€
         </Typography>
       </Stack>
 
@@ -109,7 +109,7 @@ const BudgetSummary = ({
             fontWeight: 500,
           }}
         >
-          - {total_expenses.toFixed(2)} €
+          - {total_expenses.toFixed(2)}€
         </Typography>
       </Stack>
     </Stack>

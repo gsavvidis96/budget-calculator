@@ -7,6 +7,8 @@ import {
   IconButton,
   Menu,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { alpha, Stack } from "@mui/system";
 import supabase, { BudgetItems } from "../../supabase";
@@ -22,6 +24,26 @@ const BudgetItem = ({
 }: BudgetItems["Row"]) => {
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const [loader, setLoader] = useState(false);
+  const theme = useTheme();
+  const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
+  const lgAndDown = useMediaQuery(theme.breakpoints.down("lg"));
+
+  const descriptionLimit = useMemo(() => {
+    if (smAndDown) return 25;
+
+    if (mdAndDown) return 50;
+
+    if (lgAndDown) return 35;
+
+    return 50;
+  }, [mdAndDown, smAndDown, lgAndDown]);
+
+  const displayedDescription = useMemo(() => {
+    return description!.length > descriptionLimit
+      ? description!.substring(0, descriptionLimit) + "..."
+      : description;
+  }, [description, descriptionLimit]);
 
   const open = useMemo(() => {
     return Boolean(anchorEl);
@@ -73,7 +95,7 @@ const BudgetItem = ({
           variant="body1"
           sx={{ mr: "auto", textTransform: "capitalize" }}
         >
-          {description}
+          {displayedDescription}
         </Typography>
 
         {type === "EXPENSES" && (
@@ -92,7 +114,8 @@ const BudgetItem = ({
           variant="body1"
           sx={{ color: type === "INCOME" ? "primary.main" : "error.light" }}
         >
-          {type === "INCOME" ? "+" : "-"} {value.toFixed(2)} €
+          {type === "INCOME" ? "+" : "-"}
+          {value.toFixed(2)}€
         </Typography>
 
         <IconButton size="small" onClick={handleOpen}>
@@ -115,13 +138,17 @@ const BudgetItem = ({
       >
         <Stack sx={{ padding: 1 }} gap={2}>
           <Typography variant="subtitle1" sx={{ textAlign: "center" }}>
-            Are you sure you want to {type === "INCOME" ? "income" : "expense"}{" "}
-            {description} (
+            Are you sure you want to delete{" "}
+            {type === "INCOME" ? "income" : "expense"} {displayedDescription} (
             <Box
               component="span"
-              sx={{ color: type === "INCOME" ? "primary.main" : "error.light" }}
+              sx={{
+                color: type === "INCOME" ? "primary.main" : "error.light",
+                fontSize: "14px",
+              }}
             >
-              {type === "INCOME" ? "+" : "-"} {value.toFixed(2)} €
+              {type === "INCOME" ? "+" : "-"}
+              {value.toFixed(2)}€
             </Box>
             )
           </Typography>

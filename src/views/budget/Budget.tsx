@@ -3,6 +3,7 @@ import { useMount } from "react-use";
 import supabase, { Enums, Functions } from "../../supabase";
 import { useCallback, useEffect, useState } from "react";
 import {
+  Alert,
   CircularProgress,
   Dialog,
   Divider,
@@ -139,6 +140,18 @@ const Budget = () => {
                 {currentBudget!.income_items.map((i) => {
                   return <BudgetItem {...i} key={i.id} />;
                 })}
+
+                {currentBudget!.income_items.length === 0 && (
+                  <Stack
+                    sx={{
+                      py: 2,
+                    }}
+                  >
+                    <Alert severity="info">
+                      <strong>You have no income yet</strong>
+                    </Alert>
+                  </Stack>
+                )}
               </Stack>
             </Stack>
 
@@ -182,6 +195,18 @@ const Budget = () => {
                 {currentBudget!.expense_items.map((e) => {
                   return <BudgetItem {...e} key={e.id} />;
                 })}
+
+                {currentBudget!.expense_items.length === 0 && (
+                  <Stack
+                    sx={{
+                      py: 2,
+                    }}
+                  >
+                    <Alert severity="error">
+                      <strong>You have no expenses yet</strong>
+                    </Alert>
+                  </Stack>
+                )}
               </Stack>
             </Stack>
           </Stack>

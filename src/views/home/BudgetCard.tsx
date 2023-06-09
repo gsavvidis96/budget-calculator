@@ -149,7 +149,7 @@ const BudgetCard = ({
           </Typography>
 
           <Typography variant="body2" color="text.secondary">
-            {balance.toFixed(2)} €
+            {balance.toFixed(2)}€
           </Typography>
         </Stack>
       </Stack>
