@@ -9,18 +9,46 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import supabase, { Budgets } from "../../supabase";
 import { LoadingButton } from "@mui/lab";
 import { Close } from "@mui/icons-material";
 
-const NewBudget = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
-  const [title, setTitle] = useState("");
-  const [isPinned, setIsPinned] = useState(false);
+interface Props {
+  setDialog: (dialog: boolean) => void;
+  edit?: boolean;
+  budgetTitle?: string;
+  id?: string;
+  budgetIsPinned?: boolean;
+}
+
+const NewBudget = ({
+  budgetTitle = "",
+  budgetIsPinned = false,
+  setDialog,
+  edit = false,
+  id,
+}: Props) => {
+  const [title, setTitle] = useState(budgetTitle);
+  const [isPinned, setIsPinned] = useState(budgetIsPinned);
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState(false);
+  const [initialValues] = useState({
+    title: budgetTitle,
+    isPinned: budgetIsPinned,
+  });
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const hasChanges = useMemo(() => {
+    return (
+      JSON.stringify(initialValues) !==
+      JSON.stringify({
+        title,
+        isPinned,
+      })
+    );
+  }, [initialValues, title, isPinned]);
 
   useEffect(() => {
     setError(false);
@@ -31,9 +59,18 @@ const NewBudget = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
 
     setLoader(true);
 
-    const { error } = await supabase
-      .from<"budgets", Budgets>("budgets")
-      .insert({ title, is_pinned: isPinned });
+    let error;
+
+    if (edit) {
+      ({ error } = await supabase
+        .from<"budgets", Budgets>("budgets")
+        .update({ title, is_pinned: isPinned })
+        .eq("id", id));
+    } else {
+      ({ error } = await supabase
+        .from<"budgets", Budgets>("budgets")
+        .insert({ title, is_pinned: isPinned }));
+    }
 
     setLoader(false);
 
@@ -67,7 +104,7 @@ const NewBudget = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
         onSubmit={handleSubmit}
       >
         <Typography variant="h6" sx={{ textAlign: "center" }}>
-          Add a new budget
+          {edit ? "Edit budget" : "Add a new budget"}
         </Typography>
 
         <TextField
@@ -97,7 +134,7 @@ const NewBudget = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
           variant="contained"
           type="submit"
           size="small"
-          disabled={!title}
+          disabled={!title || (edit && !hasChanges)}
           loading={loader}
           sx={{ mt: "auto" }}
         >

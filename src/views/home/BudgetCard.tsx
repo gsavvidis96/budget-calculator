@@ -1,6 +1,7 @@
 import {
   Button,
   CircularProgress,
+  Dialog,
   IconButton,
   Menu,
   Stack,
@@ -11,15 +12,17 @@ import {
 } from "@mui/material";
 import {
   DeleteOutlineOutlined,
+  EditOutlined,
   PushPin,
   PushPinOutlined,
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import supabase, { Budgets } from "../../supabase";
-import { SyntheticEvent, useMemo, useState, MouseEvent } from "react";
+import { useMemo, useState, MouseEvent } from "react";
 import { LoadingButton } from "@mui/lab";
 import useBudgetStore from "../../store/budget";
+import NewBudget from "./NewBudget";
 
 const BudgetCard = ({
   created_at,
@@ -35,26 +38,23 @@ const BudgetCard = ({
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const { budgets, setBudgets } = useBudgetStore();
-
-  const titleLimit = useMemo(() => {
-    if (smAndDown) return 12;
-
-    if (mdAndDown) return 20;
-
-    return 60;
-  }, [mdAndDown, smAndDown]);
+  const [dialog, setDialog] = useState(false);
 
   const displayedTitle = useMemo(() => {
-    return title!.length > titleLimit
-      ? title!.substring(0, titleLimit) + "..."
-      : title;
-  }, [title, titleLimit]);
+    return title!.length > 20 ? title!.substring(0, 20) + "..." : title;
+  }, [title]);
 
   const open = useMemo(() => {
     return Boolean(anchorEl);
   }, [anchorEl]);
 
-  const onTogglePin = async (event: SyntheticEvent) => {
+  const onOpenDialog = (event: MouseEvent) => {
+    event.preventDefault();
+
+    setDialog(true);
+  };
+
+  const onTogglePin = async (event: MouseEvent) => {
     event.preventDefault();
 
     setLoader(true);
@@ -98,70 +98,98 @@ const BudgetCard = ({
   };
 
   return (
-    <Stack
-      sx={{
-        backgroundColor: "budgetCardBg.main",
-        border: "1px solid",
-        borderColor: "budgetCardBorder.main",
-        borderRadius: "4px",
-        padding: 3,
-        textDecoration: "none",
-        color: "inherit",
-        transition: "all 0.2s",
-        "&:hover": {
-          backgroundColor: "budgetCardHover.main",
-        },
-      }}
-      direction="row"
-      component={Link}
-      to={`/${id}`}
-    >
-      <Stack gap={1} sx={{ flexGrow: 1 }}>
-        <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {displayedTitle}
-          </Typography>
-
-          {loader ? (
-            <CircularProgress size="20px" />
-          ) : (
-            <Tooltip title={is_pinned ? "Unpin" : "Pin"}>
-              <IconButton size="small" color="primary" onClick={onTogglePin}>
-                {is_pinned ? <PushPin /> : <PushPinOutlined />}
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
-
-        <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="subtitle2" color="text.primary">
-            Created at:
-          </Typography>
-
-          <Typography variant="body2" color="text.secondary">
-            {dayjs(created_at).format("DD/MM/YYYY")}
-          </Typography>
-        </Stack>
-
-        <Stack direction="row" gap={1} alignItems="center">
-          <Typography variant="subtitle2" color="text.primary">
-            Balance:
-          </Typography>
-
-          <Typography variant="body2" color="text.secondary">
-            {balance.toFixed(2)}€
-          </Typography>
-        </Stack>
-      </Stack>
-
-      <IconButton
-        size="small"
-        sx={{ alignSelf: "start" }}
-        color="secondary"
-        onClick={handleOpen}
+    <>
+      <Stack
+        sx={{
+          backgroundColor: "budgetCardBg.main",
+          border: "1px solid",
+          borderColor: "budgetCardBorder.main",
+          borderRadius: "4px",
+          padding: 3,
+          textDecoration: "none",
+          color: "inherit",
+          transition: "all 0.2s",
+          "&:hover": {
+            backgroundColor: "budgetCardHover.main",
+          },
+        }}
+        direction="row"
+        component={Link}
+        to={`/${id}`}
+        gap={1}
       >
-        <DeleteOutlineOutlined />
-      </IconButton>
+        <Stack gap={1} sx={{ flexGrow: 1, overflowX: "hidden" }}>
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 600,
+                minWidth: 0,
+                overflowX: "auto",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {title}
+            </Typography>
+          </Stack>
+
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="subtitle2" color="text.primary">
+              Created at:
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              {dayjs(created_at).format("DD/MM/YYYY")}
+            </Typography>
+          </Stack>
+
+          <Stack direction="row" gap={1} alignItems="center">
+            <Typography variant="subtitle2" color="text.primary">
+              Balance:
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              {balance.toFixed(2)}€
+            </Typography>
+          </Stack>
+        </Stack>
+
+        <IconButton
+          size="small"
+          sx={{ height: "24px", width: "24px" }}
+          color="primary"
+          onClick={onOpenDialog}
+        >
+          <EditOutlined sx={{ fontSize: "20px" }} />
+        </IconButton>
+
+        {loader ? (
+          <CircularProgress size="20px" />
+        ) : (
+          <Tooltip title={is_pinned ? "Unpin" : "Pin"}>
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={onTogglePin}
+              sx={{ height: "24px", width: "24px" }}
+            >
+              {is_pinned ? (
+                <PushPin sx={{ fontSize: "20px" }} />
+              ) : (
+                <PushPinOutlined sx={{ fontSize: "20px" }} />
+              )}
+            </IconButton>
+          </Tooltip>
+        )}
+
+        <IconButton
+          sx={{ height: "24px", width: "24px" }}
+          color="secondary"
+          onClick={handleOpen}
+        >
+          <DeleteOutlineOutlined sx={{ fontSize: "20px" }} />
+        </IconButton>
+      </Stack>
 
       <Menu
         anchorEl={anchorEl}
@@ -194,7 +222,32 @@ const BudgetCard = ({
           </Stack>
         </Stack>
       </Menu>
-    </Stack>
+
+      <Dialog
+        onClose={() => setDialog(false)}
+        open={dialog}
+        fullWidth={mdAndDown}
+        fullScreen={smAndDown}
+        maxWidth={false}
+        sx={{
+          ".MuiDialog-container .MuiPaper-root": {
+            boxShadow: "none",
+          },
+        }}
+      >
+        <Stack
+          sx={{ width: mdAndDown ? "100%" : "600px", padding: 2, flex: 1 }}
+        >
+          <NewBudget
+            setDialog={setDialog}
+            edit={true}
+            id={id}
+            budgetTitle={title}
+            budgetIsPinned={is_pinned}
+          />
+        </Stack>
+      </Dialog>
+    </>
   );
 };
 

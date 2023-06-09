@@ -37,8 +37,12 @@ const Navbar = () => {
             Budget Calculator
           </Typography>
 
-          <IconButton color="primary" onClick={() => setDrawer(!drawer)}>
-            <Menu></Menu>
+          <IconButton
+            color="primary"
+            onClick={() => setDrawer(!drawer)}
+            size="small"
+          >
+            <Menu />
           </IconButton>
         </Stack>
       </Toolbar>

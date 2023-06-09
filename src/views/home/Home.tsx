@@ -202,7 +202,7 @@ const Home = () => {
       {loader ? (
         <CircularProgress sx={{ m: "auto" }} size="75px" thickness={2} />
       ) : (
-        <Stack gap={2} sx={{ flexGrow: 1, overflow: "auto" }}>
+        <Stack gap={2} sx={{ flexGrow: 1 }}>
           {budgets.map((budget) => {
             return <BudgetCard {...budget} key={budget.id} />;
           })}
