@@ -1,8 +1,9 @@
-import { DeleteOutlineOutlined } from "@mui/icons-material";
+import { DeleteOutlineOutlined, EditOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
   Chip,
+  Dialog,
   Divider,
   IconButton,
   Menu,
@@ -14,6 +15,8 @@ import { alpha, Stack } from "@mui/system";
 import supabase, { BudgetItems } from "../../supabase";
 import { useMemo, useState, MouseEvent } from "react";
 import { LoadingButton } from "@mui/lab";
+import NewBudgetItem from "./NewBudgetItem";
+import { newBudgetItemDialog } from "./Budget";
 
 const BudgetItem = ({
   description,
@@ -28,6 +31,10 @@ const BudgetItem = ({
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
   const lgAndDown = useMediaQuery(theme.breakpoints.down("lg"));
+  const [dialog, setDialog] = useState<newBudgetItemDialog>({
+    open: false,
+    type: undefined,
+  });
 
   const descriptionLimit = useMemo(() => {
     if (smAndDown) return 25;
@@ -48,6 +55,15 @@ const BudgetItem = ({
   const open = useMemo(() => {
     return Boolean(anchorEl);
   }, [anchorEl]);
+
+  const onOpenDialog = (event: MouseEvent) => {
+    event.preventDefault();
+
+    setDialog({
+      open: true,
+      type,
+    });
+  };
 
   const handleOpen = (event: MouseEvent) => {
     setAnchorEl(event.currentTarget);
@@ -80,6 +96,7 @@ const BudgetItem = ({
         "&:hover": {
           backgroundColor: "budgetCardHover.main",
         },
+        cursor: "grab",
       }}
     >
       <Stack
@@ -117,6 +134,15 @@ const BudgetItem = ({
           {type === "INCOME" ? "+" : "-"}
           {value.toFixed(2)}€
         </Typography>
+
+        <IconButton size="small" onClick={onOpenDialog}>
+          <EditOutlined
+            sx={{
+              color: type === "INCOME" ? "primary.main" : "error.light",
+              fontSize: "20px",
+            }}
+          />
+        </IconButton>
 
         <IconButton size="small" onClick={handleOpen}>
           <DeleteOutlineOutlined
@@ -170,6 +196,29 @@ const BudgetItem = ({
           </Stack>
         </Stack>
       </Menu>
+
+      <Dialog
+        onClose={() => setDialog({ open: false })}
+        open={dialog.open}
+        fullWidth={mdAndDown}
+        fullScreen={smAndDown}
+        maxWidth={false}
+        sx={{
+          ".MuiDialog-container .MuiPaper-root": {
+            boxShadow: "none",
+          },
+        }}
+      >
+        <Stack
+          sx={{ width: mdAndDown ? "100%" : "600px", padding: 2, flex: 1 }}
+        >
+          <NewBudgetItem
+            type={type}
+            setDialog={setDialog}
+            budgetItem={{ id, description, value }}
+          />
+        </Stack>
+      </Dialog>
 
       <Divider />
     </Stack>

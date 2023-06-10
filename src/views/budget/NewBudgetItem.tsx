@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import supabase, { BudgetItems, Enums } from "../../supabase";
 import { LoadingButton } from "@mui/lab";
-import { SyntheticEvent, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import useBudgetStore from "../../store/budget";
 import { newBudgetItemDialog } from "./Budget";
@@ -17,35 +17,74 @@ import { Close } from "@mui/icons-material";
 interface Props {
   type: Enums["budget_item_type"];
   setDialog: (dialog: newBudgetItemDialog) => void;
+  budgetItem?: {
+    id: string;
+    description: string;
+    value: number;
+  };
 }
 
-const NewBudgetItem = ({ type, setDialog }: Props) => {
-  const [description, setDescription] = useState("");
-  const [value, setValue] = useState(0);
+const NewBudgetItem = ({
+  type,
+  setDialog,
+  budgetItem = { id: "", description: "", value: 0 },
+}: Props) => {
+  const [description, setDescription] = useState(budgetItem.description);
+  const [value, setValue] = useState(budgetItem.value);
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { setBudgetsFetched } = useBudgetStore();
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const [initialValues] = useState({
+    description: budgetItem.description,
+    value: budgetItem.value,
+  });
 
   useEffect(() => {
     setError(false);
   }, [description]);
+
+  const isEdit = useMemo(() => {
+    return Boolean(budgetItem.id);
+  }, [budgetItem.id]);
+
+  const hasChanges = useMemo(() => {
+    return (
+      JSON.stringify(initialValues) !==
+      JSON.stringify({
+        description,
+        value,
+      })
+    );
+  }, [initialValues, description, value]);
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
 
     setLoader(true);
 
-    const { error } = await supabase
-      .from<"budget_items", BudgetItems>("budget_items")
-      .insert({
-        budget_id: id!,
-        description,
-        value,
-        type,
-      });
+    let error;
+
+    if (isEdit) {
+      ({ error } = await supabase
+        .from<"budget_items", BudgetItems>("budget_items")
+        .update({
+          description,
+          value,
+        })
+        .eq("id", budgetItem.id));
+    } else {
+      ({ error } = await supabase
+        .from<"budget_items", BudgetItems>("budget_items")
+        .insert({
+          budget_id: id!,
+          description,
+          value,
+          type,
+        }));
+    }
 
     setLoader(false);
 
@@ -81,7 +120,7 @@ const NewBudgetItem = ({ type, setDialog }: Props) => {
         onSubmit={handleSubmit}
       >
         <Typography variant="h6" sx={{ textAlign: "center" }}>
-          Add {type === "INCOME" ? "Income" : "Expense"}
+          {isEdit ? "Edit" : "Add"} {type === "INCOME" ? "Income" : "Expense"}
         </Typography>
 
         <TextField
@@ -116,10 +155,10 @@ const NewBudgetItem = ({ type, setDialog }: Props) => {
           size="small"
           color={type === "INCOME" ? "primary" : "secondary"}
           loading={loader}
-          disabled={!value || !description}
+          disabled={!value || !description || (isEdit && !hasChanges)}
           sx={{ mt: "auto" }}
         >
-          Add
+          {isEdit ? "Save" : "Add"}
         </LoadingButton>
       </Stack>
     </Stack>

@@ -156,7 +156,7 @@ const BudgetCard = ({
 
         <IconButton
           size="small"
-          sx={{ height: "24px", width: "24px" }}
+          sx={{ alignSelf: "start" }}
           color="primary"
           onClick={onOpenDialog}
         >
@@ -171,7 +171,7 @@ const BudgetCard = ({
               size="small"
               color="primary"
               onClick={onTogglePin}
-              sx={{ height: "24px", width: "24px" }}
+              sx={{ alignSelf: "start" }}
             >
               {is_pinned ? (
                 <PushPin sx={{ fontSize: "20px" }} />
@@ -183,7 +183,8 @@ const BudgetCard = ({
         )}
 
         <IconButton
-          sx={{ height: "24px", width: "24px" }}
+          size="small"
+          sx={{ alignSelf: "start" }}
           color="secondary"
           onClick={handleOpen}
         >

@@ -1,8 +1,3 @@
-supabase error handling
-
-===================================
-
 drag and drop budget items
-edit budget items titles
 
 general review - code style consistency
