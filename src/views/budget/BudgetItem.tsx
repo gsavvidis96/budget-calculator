@@ -30,27 +30,16 @@ const BudgetItem = ({
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
-  const lgAndDown = useMediaQuery(theme.breakpoints.down("lg"));
   const [dialog, setDialog] = useState<newBudgetItemDialog>({
     open: false,
     type: undefined,
   });
 
-  const descriptionLimit = useMemo(() => {
-    if (smAndDown) return 25;
-
-    if (mdAndDown) return 50;
-
-    if (lgAndDown) return 35;
-
-    return 50;
-  }, [mdAndDown, smAndDown, lgAndDown]);
-
   const displayedDescription = useMemo(() => {
-    return description!.length > descriptionLimit
-      ? description!.substring(0, descriptionLimit) + "..."
+    return description!.length > 20
+      ? description!.substring(0, 20) + "..."
       : description;
-  }, [description, descriptionLimit]);
+  }, [description]);
 
   const open = useMemo(() => {
     return Boolean(anchorEl);

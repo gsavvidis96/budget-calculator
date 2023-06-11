@@ -5,8 +5,8 @@ import {
   Drawer,
   Snackbar,
   Stack,
-  ThemeProvider,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
 import Navbar from "./components/Navbar";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
