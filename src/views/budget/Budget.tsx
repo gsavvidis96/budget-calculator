@@ -100,7 +100,7 @@ const Budget = () => {
           <BudgetSummary {...currentBudget!} />
 
           <Stack gap={5} direction={mdAndDown ? "column" : "row"}>
-            <Stack gap={3} sx={{ flex: 1 }}>
+            <Stack gap={3} sx={{ flex: 1, overflow: "hidden" }}>
               <Stack
                 direction="row"
                 sx={{ alignItems: "center", justifyContent: "center" }}

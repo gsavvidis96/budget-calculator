@@ -1,3 +1,13 @@
 drag and drop budget items
+supabase self host
+custom domain
 
 general review - code style consistency
+    loaders when updating etc
+    typescript on new budget component
+    title limit on budget item delete
+    typescript in general
+    code review in general
+    snackbars on budget item delete edit etc
+    netlify deploy
+    update packages

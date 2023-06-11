@@ -124,7 +124,6 @@ const BudgetCard = ({
               variant="h5"
               sx={{
                 fontWeight: 600,
-                minWidth: 0,
                 overflowX: "auto",
                 whiteSpace: "nowrap",
               }}

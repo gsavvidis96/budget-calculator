@@ -110,9 +110,14 @@ const BudgetItem = ({
       >
         <Typography
           variant="body1"
-          sx={{ mr: "auto", textTransform: "capitalize" }}
+          sx={{
+            mr: "auto",
+            textTransform: "capitalize",
+            whiteSpace: "nowrap",
+            overflow: "auto",
+          }}
         >
-          {displayedDescription}
+          {description}
         </Typography>
 
         {type === "EXPENSES" && (
