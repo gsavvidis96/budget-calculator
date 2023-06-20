@@ -1,7 +1,3 @@
-drag and drop budget items
-supabase self host
-custom domain
-
 general review - code style consistency
     loaders when updating etc
     snackbars on budget item delete edit etc
@@ -9,5 +5,3 @@ general review - code style consistency
     typescript on new budget component
     typescript in general
     code review in general
-    
-    netlify deploy

@@ -208,9 +208,17 @@ const Home = () => {
           })}
 
           {budgetsFetched && budgets.length === 0 && (
-            <Alert severity="info">
-              <strong>You have no budgets yet</strong>
-            </Alert>
+            <>
+              {search ? (
+                <Alert severity="warning">
+                  <strong>No budgets found</strong>
+                </Alert>
+              ) : (
+                <Alert severity="info">
+                  <strong>You have no budgets yet</strong>
+                </Alert>
+              )}
+            </>
           )}
         </Stack>
       )}

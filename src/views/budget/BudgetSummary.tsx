@@ -29,7 +29,11 @@ const BudgetSummary = ({
       gap={1}
     >
       <Typography
-        sx={{ alignSelf: "center", textAlign: "center" }}
+        sx={{
+          alignSelf: "center",
+          textAlign: "center",
+          textTransform: "capitalize",
+        }}
         variant="body1"
       >
         {title}

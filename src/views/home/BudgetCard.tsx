@@ -126,6 +126,7 @@ const BudgetCard = ({
                 fontWeight: 600,
                 overflowX: "auto",
                 whiteSpace: "nowrap",
+                textTransform: "capitalize",
               }}
             >
               {title}
