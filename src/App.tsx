@@ -90,7 +90,7 @@ const App = () => {
             flexDirection: " column",
           }}
         >
-          {init ? <Outlet /> : <>loading</>}
+          {init ? <Outlet /> : <></>}
         </Container>
 
         <Drawer

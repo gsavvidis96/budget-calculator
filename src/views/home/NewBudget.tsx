@@ -13,6 +13,8 @@ import { SyntheticEvent, useEffect, useMemo, useState } from "react";
 import supabase, { Budgets } from "../../supabase";
 import { LoadingButton } from "@mui/lab";
 import { Close } from "@mui/icons-material";
+import useBudgetStore from "../../store/budget";
+import useBaseStore from "../../store/base";
 
 interface Props {
   setDialog: (dialog: boolean) => void;
@@ -39,6 +41,8 @@ const NewBudget = ({
   });
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const { fetchBudgets } = useBudgetStore();
+  const { setSnackbar } = useBaseStore();
 
   const hasChanges = useMemo(() => {
     return (
@@ -72,9 +76,17 @@ const NewBudget = ({
         .insert({ title, is_pinned: isPinned }));
     }
 
+    await fetchBudgets({ refresh: true });
+
     setLoader(false);
 
     if (error) return setError(true);
+
+    setSnackbar({
+      open: true,
+      type: "success",
+      message: `Budget was ${edit ? "updated" : "added"}!`,
+    });
 
     setDialog(false);
   };

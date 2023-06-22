@@ -23,6 +23,7 @@ import { useMemo, useState, MouseEvent } from "react";
 import { LoadingButton } from "@mui/lab";
 import useBudgetStore from "../../store/budget";
 import NewBudget from "./NewBudget";
+import useBaseStore from "../../store/base";
 
 const BudgetCard = ({
   created_at,
@@ -37,7 +38,8 @@ const BudgetCard = ({
   const theme = useTheme();
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
-  const { budgets, setBudgets } = useBudgetStore();
+  const { budgets, setBudgets, fetchBudgets } = useBudgetStore();
+  const { setSnackbar } = useBaseStore();
   const [dialog, setDialog] = useState(false);
 
   const displayedTitle = useMemo(() => {
@@ -63,6 +65,14 @@ const BudgetCard = ({
       .from("budgets")
       .update({ is_pinned: !is_pinned })
       .eq("id", id);
+
+    await fetchBudgets({ refresh: true });
+
+    setSnackbar({
+      open: true,
+      type: `${is_pinned ? "warning" : "success"}`,
+      message: `Budget was ${is_pinned ? "un" : ""}pinned.`,
+    });
 
     setLoader(false);
   };
@@ -91,6 +101,12 @@ const BudgetCard = ({
     await supabase.from<"budgets", Budgets>("budgets").delete().eq("id", id);
 
     setBudgets(budgets.filter((b) => b.id !== id));
+
+    setSnackbar({
+      open: true,
+      type: "warning",
+      message: "Budget was deleted.",
+    });
 
     handleClose();
 
