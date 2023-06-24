@@ -257,10 +257,7 @@ const BudgetCard = ({
         >
           <NewBudget
             setDialog={setDialog}
-            edit={true}
-            id={id}
-            budgetTitle={title}
-            budgetIsPinned={is_pinned}
+            budget={{ id, title, isPinned: is_pinned }}
           />
         </Stack>
       </Dialog>

@@ -1,7 +1,8 @@
+refactor with nuxt and prisma
+    drag and drop
+    proper error handling
+
 general review - code style consistency
     loaders when updating etc
-    snackbars on budget item delete edit etc
-
-    typescript on new budget component
     typescript in general
     code review in general

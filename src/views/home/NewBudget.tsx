@@ -18,26 +18,24 @@ import useBaseStore from "../../store/base";
 
 interface Props {
   setDialog: (dialog: boolean) => void;
-  edit?: boolean;
-  budgetTitle?: string;
-  id?: string;
-  budgetIsPinned?: boolean;
+  budget?: {
+    id: string;
+    title: string;
+    isPinned: boolean;
+  };
 }
 
 const NewBudget = ({
-  budgetTitle = "",
-  budgetIsPinned = false,
   setDialog,
-  edit = false,
-  id,
+  budget = { id: "", title: "", isPinned: false },
 }: Props) => {
-  const [title, setTitle] = useState(budgetTitle);
-  const [isPinned, setIsPinned] = useState(budgetIsPinned);
+  const [title, setTitle] = useState(budget.title);
+  const [isPinned, setIsPinned] = useState(budget.isPinned);
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState(false);
   const [initialValues] = useState({
-    title: budgetTitle,
-    isPinned: budgetIsPinned,
+    title: budget.title,
+    isPinned: budget.isPinned,
   });
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
@@ -54,6 +52,10 @@ const NewBudget = ({
     );
   }, [initialValues, title, isPinned]);
 
+  const isEdit = useMemo(() => {
+    return Boolean(budget.id);
+  }, [budget.id]);
+
   useEffect(() => {
     setError(false);
   }, [title]);
@@ -65,11 +67,11 @@ const NewBudget = ({
 
     let error;
 
-    if (edit) {
+    if (isEdit) {
       ({ error } = await supabase
         .from<"budgets", Budgets>("budgets")
         .update({ title, is_pinned: isPinned })
-        .eq("id", id));
+        .eq("id", budget.id));
     } else {
       ({ error } = await supabase
         .from<"budgets", Budgets>("budgets")
@@ -85,7 +87,7 @@ const NewBudget = ({
     setSnackbar({
       open: true,
       type: "success",
-      message: `Budget was ${edit ? "updated" : "added"}!`,
+      message: `Budget was ${isEdit ? "updated" : "added"}!`,
     });
 
     setDialog(false);
@@ -116,7 +118,7 @@ const NewBudget = ({
         onSubmit={handleSubmit}
       >
         <Typography variant="h6" sx={{ textAlign: "center" }}>
-          {edit ? "Edit budget" : "Add a new budget"}
+          {isEdit ? "Edit budget" : "Add a new budget"}
         </Typography>
 
         <TextField
@@ -146,7 +148,7 @@ const NewBudget = ({
           variant="contained"
           type="submit"
           size="small"
-          disabled={!title || (edit && !hasChanges)}
+          disabled={!title || (isEdit && !hasChanges)}
           loading={loader}
           sx={{ mt: "auto" }}
         >
