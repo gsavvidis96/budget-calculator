@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import useBudgetStore from "../../store/budget";
 import { newBudgetItemDialog } from "./Budget";
 import { Close } from "@mui/icons-material";
+import useBaseStore from "../../store/base";
 
 interface Props {
   type: Enums["budget_item_type"];
@@ -33,14 +34,15 @@ const NewBudgetItem = ({
   const [value, setValue] = useState(budgetItem.value);
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState(false);
-  const { id } = useParams<{ id: string }>();
-  const { setBudgetsFetched } = useBudgetStore();
+  const { id } = useParams();
+  const { setBudgetsFetched, fetchCurrentBudget } = useBudgetStore();
   const theme = useTheme();
   const smAndDown = useMediaQuery(theme.breakpoints.down("sm"));
   const [initialValues] = useState({
     description: budgetItem.description,
     value: budgetItem.value,
   });
+  const { setSnackbar } = useBaseStore();
 
   useEffect(() => {
     setError(false);
@@ -86,6 +88,8 @@ const NewBudgetItem = ({
         }));
     }
 
+    await fetchCurrentBudget(id!);
+
     setLoader(false);
 
     if (error) return setError(true);
@@ -93,6 +97,14 @@ const NewBudgetItem = ({
     setBudgetsFetched(false);
 
     setDialog({ open: false });
+
+    setSnackbar({
+      open: true,
+      type: "success",
+      message: `${type === "INCOME" ? "Income" : "Expense"} was ${
+        isEdit ? "updated" : "added"
+      }!`,
+    });
   };
 
   return (

@@ -3,6 +3,6 @@ refactor with nuxt and prisma
     proper error handling
 
 general review - code style consistency
-    loaders when updating etc
-    typescript in general
-    code review in general
+    number input
+    budgets type
+    error handling

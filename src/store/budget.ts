@@ -21,15 +21,18 @@ export interface BudgetState {
   filter: BudgetFilter;
   budgetsFetched: boolean;
   search: string;
+  currentBudget: Functions["get_budget"]["Returns"] | null;
   setBudgets: (budgets: Budgets["Row"][]) => void;
   setFilter: (filter: BudgetFilter) => void;
   setBudgetsFetched: (budgetsFetched: boolean) => void;
   setSearch: (search: string) => void;
   fetchBudgets: ({
     refresh,
-  }: {
-    refresh?: boolean | undefined;
-  }) => Promise<void>;
+  }?: {
+    refresh?: boolean;
+  }) => Promise<Budgets["Row"][]>;
+  setCurrentBudget: (budget: Functions["get_budget"]["Returns"] | null) => void;
+  fetchCurrentBudget: (id: string) => Promise<void>;
 }
 
 const useBudgetStore = create<BudgetState>()(
@@ -38,6 +41,7 @@ const useBudgetStore = create<BudgetState>()(
     filter: BudgetFilter.CREATION_DATE_DESC,
     budgetsFetched: false,
     search: "",
+    currentBudget: null,
     setBudgets: (budgets) =>
       set((state) => {
         state.budgets = budgets;
@@ -55,10 +59,16 @@ const useBudgetStore = create<BudgetState>()(
         state.search = search;
       }),
     fetchBudgets: async ({ refresh = false } = {}) => {
-      const { budgetsFetched, filter, search, setBudgets, setBudgetsFetched } =
-        getState();
+      const {
+        budgetsFetched,
+        filter,
+        search,
+        setBudgets,
+        setBudgetsFetched,
+        budgets,
+      } = getState();
 
-      if (budgetsFetched && !refresh) return;
+      if (budgetsFetched && !refresh) return budgets;
 
       const { data } = await supabase.rpc<
         "get_budgets_with_balance",
@@ -71,6 +81,21 @@ const useBudgetStore = create<BudgetState>()(
       if (data) setBudgets(data);
 
       setBudgetsFetched(true);
+
+      return data || [];
+    },
+    setCurrentBudget: (budget) =>
+      set((state) => {
+        state.currentBudget = budget;
+      }),
+    fetchCurrentBudget: async (id) => {
+      const { setCurrentBudget } = getState();
+
+      const { data } = await supabase
+        .rpc<"get_budget", Functions["get_budget"]>("get_budget", { b_id: id })
+        .single<Functions["get_budget"]["Returns"]>();
+
+      setCurrentBudget(data);
     },
   }))
 );

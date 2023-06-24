@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useMount } from "react-use";
-import supabase, { Enums, Functions } from "../../supabase";
-import { useCallback, useEffect, useState } from "react";
+import { Enums } from "../../supabase";
+import { useState } from "react";
 import {
   Alert,
   CircularProgress,
@@ -17,6 +17,7 @@ import { PlaylistAdd } from "@mui/icons-material";
 import BudgetSummary from "./BudgetSummary";
 import BudgetItem from "./BudgetItem";
 import NewBudgetItem from "./NewBudgetItem";
+import useBudgetStore from "../../store/budget";
 
 export interface newBudgetItemDialog {
   open: boolean;
@@ -25,9 +26,7 @@ export interface newBudgetItemDialog {
 
 const Budget = () => {
   const { id } = useParams();
-  const [currentBudget, setCurrentBudget] = useState<
-    Functions["get_budget"]["Returns"] | null
-  >(null);
+  const { currentBudget, fetchCurrentBudget, fetchBudgets } = useBudgetStore();
   const [loader, setLoader] = useState(true);
   const theme = useTheme();
   const mdAndDown = useMediaQuery(theme.breakpoints.down("md"));
@@ -36,47 +35,24 @@ const Budget = () => {
     open: false,
     type: undefined,
   });
+  const navigate = useNavigate();
 
-  const getBudget = useCallback(async () => {
+  const onFetchCurrentBudget = async () => {
     setLoader(true);
 
-    const { data } = await supabase
-      .rpc<"get_budget", Functions["get_budget"]>("get_budget", {
-        b_id: id!,
-      })
-      .single();
-
-    setCurrentBudget(data);
+    await fetchCurrentBudget(id!);
 
     setLoader(false);
-  }, [id]);
+  };
 
-  // subscribe to budgets
-  useEffect(() => {
-    const channel = supabase
-      .channel("table-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "budget_items",
-        },
-        () => {
-          getBudget();
-        }
-      )
-      .subscribe();
+  useMount(async () => {
+    const budgets = await fetchBudgets();
 
-    return () => {
-      (async () => {
-        await supabase.removeChannel(channel);
-      })();
-    };
-  }, [getBudget]);
+    const found = budgets.find((b) => b.id === id);
 
-  useMount(() => {
-    getBudget();
+    if (!found) return navigate("/");
+
+    onFetchCurrentBudget();
   });
 
   const openDialog = (type: Enums["budget_item_type"]) => {

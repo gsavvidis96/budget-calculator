@@ -17,6 +17,9 @@ import { useMemo, useState, MouseEvent } from "react";
 import { LoadingButton } from "@mui/lab";
 import NewBudgetItem from "./NewBudgetItem";
 import { newBudgetItemDialog } from "./Budget";
+import useBudgetStore from "../../store/budget";
+import { useParams } from "react-router-dom";
+import useBaseStore from "../../store/base";
 
 const BudgetItem = ({
   description,
@@ -34,6 +37,9 @@ const BudgetItem = ({
     open: false,
     type: undefined,
   });
+  const { id: budgetId } = useParams();
+  const { fetchCurrentBudget } = useBudgetStore();
+  const { setSnackbar } = useBaseStore();
 
   const displayedDescription = useMemo(() => {
     return description!.length > 20
@@ -65,16 +71,22 @@ const BudgetItem = ({
   const onDelete = async () => {
     setLoader(true);
 
-    console.log(id);
-
     await supabase
       .from<"budget_items", BudgetItems>("budget_items")
       .delete()
       .eq("id", id);
 
+    await fetchCurrentBudget(budgetId!);
+
     handleClose();
 
     setLoader(false);
+
+    setSnackbar({
+      open: true,
+      type: "warning",
+      message: `${type === "INCOME" ? "Income" : "Expense"} was deleted`,
+    });
   };
 
   return (
