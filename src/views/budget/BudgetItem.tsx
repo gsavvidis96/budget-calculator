@@ -97,7 +97,6 @@ const BudgetItem = ({
         "&:hover": {
           backgroundColor: "budgetCardHover.main",
         },
-        cursor: "grab",
       }}
     >
       <Stack

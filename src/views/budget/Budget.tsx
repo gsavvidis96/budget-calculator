@@ -76,7 +76,10 @@ const Budget = () => {
           <BudgetSummary {...currentBudget!} />
 
           <Stack gap={5} direction={mdAndDown ? "column" : "row"}>
-            <Stack gap={3} sx={{ flex: 1, overflow: "hidden" }}>
+            <Stack
+              gap={3}
+              sx={{ flex: 1, overflow: mdAndDown ? "visible" : "hidden" }}
+            >
               <Stack
                 direction="row"
                 sx={{ alignItems: "center", justifyContent: "center" }}
@@ -131,7 +134,10 @@ const Budget = () => {
               </Stack>
             </Stack>
 
-            <Stack sx={{ flex: 1 }} gap={3}>
+            <Stack
+              sx={{ flex: 1, overflow: mdAndDown ? "visible" : "hidden" }}
+              gap={3}
+            >
               <Stack
                 direction="row"
                 sx={{ alignItems: "center", justifyContent: "center" }}

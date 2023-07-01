@@ -9,39 +9,43 @@ export enum BudgetFilter {
   BALANCE_DESC,
 }
 
-export const filterMap: { [key in BudgetFilter]: string } = {
+const filterMap: { [key in BudgetFilter]: string } = {
   [BudgetFilter.CREATION_DATE_ASC]: "created_at ASC",
   [BudgetFilter.CREATION_DATE_DESC]: "created_at DESC",
   [BudgetFilter.BALANCE_ASC]: "balance ASC",
   [BudgetFilter.BALANCE_DESC]: "balance DESC",
 };
 
-export interface BudgetState {
+interface BudgetState {
   budgets: Budgets["Row"][];
   filter: BudgetFilter;
   budgetsFetched: boolean;
   search: string;
   currentBudget: Functions["get_budget"]["Returns"] | null;
+}
+
+interface BudgetActions {
   setBudgets: (budgets: Budgets["Row"][]) => void;
   setFilter: (filter: BudgetFilter) => void;
   setBudgetsFetched: (budgetsFetched: boolean) => void;
   setSearch: (search: string) => void;
-  fetchBudgets: ({
-    refresh,
-  }?: {
-    refresh?: boolean;
-  }) => Promise<Budgets["Row"][]>;
+  fetchBudgets: (options?: { refresh?: boolean }) => Promise<Budgets["Row"][]>;
   setCurrentBudget: (budget: Functions["get_budget"]["Returns"] | null) => void;
   fetchCurrentBudget: (id: string) => Promise<void>;
+  reset: () => void;
 }
 
-const useBudgetStore = create<BudgetState>()(
+const initialState = {
+  budgets: [],
+  filter: BudgetFilter.CREATION_DATE_DESC,
+  budgetsFetched: false,
+  search: "",
+  currentBudget: null,
+};
+
+const useBudgetStore = create<BudgetState & BudgetActions>()(
   immer((set, getState) => ({
-    budgets: [],
-    filter: BudgetFilter.CREATION_DATE_DESC,
-    budgetsFetched: false,
-    search: "",
-    currentBudget: null,
+    ...initialState,
     setBudgets: (budgets) =>
       set((state) => {
         state.budgets = budgets;
@@ -97,6 +101,7 @@ const useBudgetStore = create<BudgetState>()(
 
       setCurrentBudget(data);
     },
+    reset: () => set(initialState),
   }))
 );
 

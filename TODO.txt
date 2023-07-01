@@ -3,6 +3,5 @@ refactor with nuxt and prisma
     proper error handling
 
 general review - code style consistency
-    number input
     budgets type
     error handling

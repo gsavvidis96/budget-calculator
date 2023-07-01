@@ -8,7 +8,13 @@ import {
 } from "@mui/material";
 import supabase, { BudgetItems, Enums } from "../../supabase";
 import { LoadingButton } from "@mui/lab";
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  SyntheticEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useParams } from "react-router-dom";
 import useBudgetStore from "../../store/budget";
 import { newBudgetItemDialog } from "./Budget";
@@ -61,6 +67,12 @@ const NewBudgetItem = ({
       })
     );
   }, [initialValues, description, value]);
+
+  const handleValueChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setValue(+parseFloat(e.target.value).toFixed(2));
+  };
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -130,6 +142,7 @@ const NewBudgetItem = ({
         gap={2}
         component="form"
         onSubmit={handleSubmit}
+        noValidate
       >
         <Typography variant="h6" sx={{ textAlign: "center" }}>
           {isEdit ? "Edit" : "Add"} {type === "INCOME" ? "Income" : "Expense"}
@@ -156,9 +169,12 @@ const NewBudgetItem = ({
           variant="outlined"
           size="small"
           type="number"
-          onChange={(e) => setValue(+e.target.value)}
+          onChange={handleValueChange}
           value={value}
-          InputProps={{ inputProps: { min: 0 } }}
+          InputProps={{
+            inputProps: { min: 0 },
+          }}
+          onFocus={(e) => e.target.select()}
         />
 
         <LoadingButton

@@ -4,10 +4,12 @@ import supabase from "../supabase";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LoadingButton } from "@mui/lab";
+import useBudgetStore from "../store/budget";
 
 const Logout = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
   const [loader, setLoader] = useState(false);
   const { setUser } = useAuthStore();
+  const { reset } = useBudgetStore();
   const navigate = useNavigate();
 
   const closeDialog = () => {
@@ -20,6 +22,7 @@ const Logout = ({ setDialog }: { setDialog: (dialog: boolean) => void }) => {
     await supabase.auth.signOut();
 
     setUser(null);
+    reset();
 
     navigate("/login");
 
