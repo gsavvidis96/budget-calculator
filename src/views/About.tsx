@@ -26,11 +26,11 @@ const About = () => {
           }}
         >
           Giannis Savvidis
-        </Typography>
-        . It was created for fun and showcasing purposes. The main technologies
-        used include Typescript, React.js, and supabase. Future plans for this
-        project involve migrating the client to Next.js and utilizing the Prisma
-        ORM instead of the supabase JavaScript SDK. This change aims to improve
+        </Typography>{" "}
+        for fun and showcasing purposes. The main technologies used include
+        Typescript, React.js, and supabase. Future plans for this project
+        involve migrating the client to Next.js and utilizing the Prisma ORM
+        instead of the supabase JavaScript SDK. This change aims to improve
         Typescript support and provide more elegant database migrations.
       </Typography>
     </Stack>
