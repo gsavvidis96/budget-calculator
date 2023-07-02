@@ -1,7 +1,0 @@
-refactor with nuxt and prisma
-    drag and drop
-    proper error handling
-
-general review - code style consistency
-    budgets type
-    error handling
