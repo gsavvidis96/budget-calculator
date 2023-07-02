@@ -8,18 +8,15 @@ import {
 } from "@mui/material";
 import supabase, { BudgetItems, Enums } from "../../supabase";
 import { LoadingButton } from "@mui/lab";
-import {
-  ChangeEvent,
-  SyntheticEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import useBudgetStore from "../../store/budget";
 import { newBudgetItemDialog } from "./Budget";
 import { Close } from "@mui/icons-material";
 import useBaseStore from "../../store/base";
+import * as yup from "yup";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 interface Props {
   type: Enums["budget_item_type"];
@@ -31,13 +28,21 @@ interface Props {
   };
 }
 
+const schema = yup.object({
+  description: yup.string().required().trim(),
+  value: yup.number().required().moreThan(0).max(99999999),
+});
+
+interface FormInputs {
+  description: string;
+  value: number;
+}
+
 const NewBudgetItem = ({
   type,
   setDialog,
   budgetItem = { id: "", description: "", value: 0 },
 }: Props) => {
-  const [description, setDescription] = useState(budgetItem.description);
-  const [value, setValue] = useState(budgetItem.value);
   const [loader, setLoader] = useState(false);
   const [error, setError] = useState(false);
   const { id } = useParams();
@@ -50,15 +55,33 @@ const NewBudgetItem = ({
   });
   const { setSnackbar } = useBaseStore();
 
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+    formState: { isSubmitted },
+  } = useForm<FormInputs>({
+    defaultValues: {
+      description: budgetItem.description,
+      value: budgetItem.value,
+    },
+    resolver: yupResolver(schema),
+  });
+
+  const currentValues = watch();
+
   useEffect(() => {
     setError(false);
-  }, [description]);
+  }, [currentValues.description]);
 
   const isEdit = useMemo(() => {
     return Boolean(budgetItem.id);
   }, [budgetItem.id]);
 
   const hasChanges = useMemo(() => {
+    const { description, value } = currentValues;
+
     return (
       JSON.stringify(initialValues) !==
       JSON.stringify({
@@ -66,16 +89,28 @@ const NewBudgetItem = ({
         value,
       })
     );
-  }, [initialValues, description, value]);
+  }, [initialValues, currentValues]);
 
-  const handleValueChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setValue(+parseFloat(e.target.value).toFixed(2));
-  };
+  const disabled = useMemo(() => {
+    const { description, value } = currentValues;
 
-  const handleSubmit = async (e: SyntheticEvent) => {
-    e.preventDefault();
+    if (isEdit && !hasChanges) return true; // if on edit mode and no changes made
+
+    if (!description || !value)
+      // if value or description are empty
+      return true;
+
+    return false;
+  }, [isEdit, hasChanges, currentValues]);
+
+  const valueErrorMsg = useMemo(() => {
+    if (errors?.value?.type !== "max") return "";
+
+    return errors?.value?.message;
+  }, [errors?.value]);
+
+  const onSubmit = async (data: FormInputs) => {
+    const { description, value } = data;
 
     setLoader(true);
 
@@ -100,11 +135,17 @@ const NewBudgetItem = ({
         }));
     }
 
+    if (error) {
+      setLoader(false);
+
+      if (error.code === "23505") return setError(true);
+
+      return;
+    }
+
     await fetchCurrentBudget(id!);
 
     setLoader(false);
-
-    if (error) return setError(true);
 
     setBudgetsFetched(false);
 
@@ -141,40 +182,49 @@ const NewBudgetItem = ({
         }}
         gap={2}
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         noValidate
       >
         <Typography variant="h6" sx={{ textAlign: "center" }}>
           {isEdit ? "Edit" : "Add"} {type === "INCOME" ? "Income" : "Expense"}
         </Typography>
 
-        <TextField
-          label="Description"
-          variant="outlined"
-          size="small"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          error={error}
-          helperText={
-            error
-              ? `An ${
-                  type === "INCOME" ? "Income" : "Expense"
-                } with this description already exists`
-              : ""
-          }
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              label="Description"
+              variant="outlined"
+              size="small"
+              {...field}
+              error={error}
+              helperText={
+                error
+                  ? `An ${
+                      type === "INCOME" ? "income" : "expense"
+                    } with this description already exists`
+                  : ""
+              }
+            />
+          )}
         />
 
-        <TextField
-          label="Value"
-          variant="outlined"
-          size="small"
-          type="number"
-          onChange={handleValueChange}
-          value={value}
-          InputProps={{
-            inputProps: { min: 0 },
-          }}
-          onFocus={(e) => e.target.select()}
+        <Controller
+          name="value"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              label="Value"
+              variant="outlined"
+              size="small"
+              type="number"
+              {...field}
+              onFocus={(e) => e.target.select()}
+              error={isSubmitted && Boolean(errors.value?.type === "max")}
+              helperText={valueErrorMsg}
+            />
+          )}
         />
 
         <LoadingButton
@@ -183,7 +233,7 @@ const NewBudgetItem = ({
           size="small"
           color={type === "INCOME" ? "primary" : "secondary"}
           loading={loader}
-          disabled={!value || !description || (isEdit && !hasChanges)}
+          disabled={disabled}
           sx={{ mt: "auto" }}
         >
           {isEdit ? "Save" : "Add"}

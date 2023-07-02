@@ -78,11 +78,15 @@ const NewBudget = ({
         .insert({ title, is_pinned: isPinned }));
     }
 
+    if (error) {
+      setLoader(false);
+
+      return setError(true);
+    }
+
     await fetchBudgets({ refresh: true });
 
     setLoader(false);
-
-    if (error) return setError(true);
 
     setSnackbar({
       open: true,
@@ -148,7 +152,7 @@ const NewBudget = ({
           variant="contained"
           type="submit"
           size="small"
-          disabled={!title || (isEdit && !hasChanges)}
+          disabled={!title.trim() || (isEdit && !hasChanges)}
           loading={loader}
           sx={{ mt: "auto" }}
         >
