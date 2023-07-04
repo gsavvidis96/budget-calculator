@@ -31,7 +31,24 @@ const About = () => {
         Typescript, React.js, and supabase. Future plans for this project
         involve migrating the client to Next.js and utilizing the Prisma ORM
         instead of the supabase JavaScript SDK. This change aims to improve
-        Typescript support and provide more elegant database migrations.
+        Typescript support and provide more elegant database migrations. You can
+        find the GitHub repository for this project{" "}
+        <Typography
+          variant="body1"
+          component="a"
+          href="https://github.com/gsavvidis96/budget-calculator"
+          target="_blank"
+          sx={{
+            textDecoration: "none",
+            color: "primary.main",
+            "&:hover": {
+              textDecoration: "underline",
+            },
+          }}
+        >
+          here
+        </Typography>
+        .
       </Typography>
     </Stack>
   );
